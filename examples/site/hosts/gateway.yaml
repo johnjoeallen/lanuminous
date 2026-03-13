@@ -1,0 +1,20 @@
+name: gateway
+role: gateway
+network: lab
+management_ip: 10.0.0.1
+interfaces:
+  - name: enp1s0
+    address: dhcp
+  - name: enp2s0
+    network: lab
+    address: 10.0.0.1/24
+  - name: enp3s0.10
+    network: wifi
+    address: 10.0.10.1/24
+  - name: enp3s0.20
+    network: iot
+    address: 10.0.20.1/24
+  - name: enp3s0.30
+    network: guest
+    address: 10.0.30.1/24
+

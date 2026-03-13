@@ -1,0 +1,11 @@
+groups:
+  - name: indoor
+    description: Main indoor AP group.
+    ssids:
+      - HomeWiFi
+      - IoTWiFi
+      - GuestWiFi
+    ap_names:
+      - ap1
+      - ap2
+

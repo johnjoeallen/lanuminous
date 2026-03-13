@@ -1,0 +1,11 @@
+name: ap1
+role: access_point
+network: wifi
+management_ip: 10.0.10.2
+wifi:
+  ap_group: indoor
+  ssids:
+    - HomeWiFi
+    - IoTWiFi
+    - GuestWiFi
+

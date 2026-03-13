@@ -1,0 +1,29 @@
+aps:
+  - name: ap1
+    management_ip: 10.0.10.2
+    group: indoor
+    backend: manual
+    uplink:
+      switch_name: core-sw1
+      port: ge-0/0/10
+      native_vlan: 10
+      tagged_vlans: [20, 30]
+      expected_networks: [wifi, iot, guest]
+    ssids:
+      - HomeWiFi
+      - IoTWiFi
+      - GuestWiFi
+  - name: ap2
+    management_ip: 10.0.10.3
+    group: indoor
+    backend: manual
+    uplink:
+      switch_name: core-sw1
+      port: ge-0/0/11
+      native_vlan: 10
+      tagged_vlans: [20, 30]
+      expected_networks: [wifi, iot, guest]
+    ssids:
+      - HomeWiFi
+      - GuestWiFi
+

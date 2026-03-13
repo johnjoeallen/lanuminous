@@ -1,0 +1,27 @@
+policies:
+  - name: lab-anywhere
+    action: accept
+    source_zone: lab
+    destination_zone: wan
+    allowed_services: [any]
+    description: Trusted lab clients can access the internet.
+  - name: wifi-internet
+    action: accept
+    source_zone: wifi
+    destination_zone: wan
+    allowed_services: [dns, http, https]
+    description: Wi-Fi clients can access the internet.
+  - name: iot-jellyfin
+    action: accept
+    source_zone: iot
+    destination_zone: lab
+    allowed_services: [http, https]
+    destination_hosts: [jellyfin]
+    description: IoT devices may reach Jellyfin only.
+  - name: guest-internet
+    action: accept
+    source_zone: guest
+    destination_zone: wan
+    allowed_services: [dns, http, https]
+    description: Guests can access the internet only.
+

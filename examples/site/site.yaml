@@ -1,0 +1,5 @@
+metadata:
+  name: Lantricate Demo Site
+  description: Example home-lab and small-site intent for Stage 1.
+  managed_prefix: "# Managed by Lantricate. Do not edit manually."
+

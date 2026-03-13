@@ -1,0 +1,16 @@
+zones:
+  - name: lab
+    networks: [lab]
+    description: Trusted lab and management network.
+  - name: wifi
+    networks: [wifi]
+    description: Primary Wi-Fi clients.
+  - name: iot
+    networks: [iot]
+    description: Isolated IoT devices.
+  - name: guest
+    networks: [guest]
+    description: Guest-only internet access.
+  - name: wan
+    description: Upstream internet zone.
+

@@ -1,0 +1,9 @@
+name: jellyfin
+role: service
+network: lab
+management_ip: 10.0.0.20
+reservations:
+  - hostname: jellyfin
+    ip: 10.0.0.20
+    mac: "02:00:00:00:00:20"
+

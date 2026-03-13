@@ -1,0 +1,3 @@
+name: nftables
+enabled: true
+reload_command: systemctl reload nftables
