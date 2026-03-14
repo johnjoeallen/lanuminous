@@ -1,0 +1,12 @@
+provider: nginx
+sites:
+  - name: jellyfin-proxy
+    server_names:
+      - jellyfin.example.lan
+      - media.example.lan
+    listen_port: 443
+    tls_mode: terminate_at_proxy
+    backend:
+      host_ref: jellyfin
+      port: 8096
+      scheme: http

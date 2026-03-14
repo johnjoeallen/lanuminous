@@ -49,9 +49,14 @@ export function OverviewPage({ site }: OverviewPageProps) {
             <span>Apply posture</span>
             <strong>Render and plan today, deploy pipeline next</strong>
           </article>
+          <article className="summary-card">
+            <span>Ingress intent</span>
+            <strong>
+              {site.portForwards.length} forwards and {site.reverseProxies.length} Apache proxies
+            </strong>
+          </article>
         </div>
       </SectionPanel>
     </>
   );
 }
-

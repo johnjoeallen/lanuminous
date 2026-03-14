@@ -3,6 +3,7 @@ import { SiteViewModel } from "../types/site";
 export const mockSite: SiteViewModel = {
   name: "Lantricate Demo Site",
   description: "Intent model for a Linux gateway, segmented Wi-Fi, and staged artifact generation.",
+  reverseProxyProvider: "nginx",
   networks: [
     {
       name: "lab",
@@ -77,6 +78,17 @@ export const mockSite: SiteViewModel = {
       summary: "Guest clients can access the internet only."
     }
   ],
+  portForwards: [
+    {
+      name: "jellyfin-https",
+      protocol: "tcp",
+      externalPort: 8443,
+      destinationHost: "jellyfin",
+      destinationPort: 8096,
+      sourceZone: "wan",
+      summary: "Forward WAN 8443 to the internal Jellyfin service."
+    }
+  ],
   ssids: [
     { name: "HomeWiFi", vlan: 10, zone: "wifi", groups: ["indoor"] },
     { name: "IoTWiFi", vlan: 20, zone: "iot", groups: ["indoor"] },
@@ -98,7 +110,25 @@ export const mockSite: SiteViewModel = {
       ssids: ["HomeWiFi", "GuestWiFi"]
     }
   ],
+  reverseProxies: [
+    {
+      name: "jellyfin-proxy",
+      provider: "nginx",
+      serverNames: ["jellyfin.example.lan", "media.example.lan"],
+      listenPort: 443,
+      backendHost: "jellyfin",
+      backendPort: 8096,
+      backendScheme: "http",
+      tlsMode: "terminate_at_proxy"
+    }
+  ],
   artifacts: [
+    {
+      logicalName: "reverse_proxy_main",
+      targetPath: "/etc/nginx/conf.d/lantricate-proxies.conf",
+      renderer: "nginx",
+      changeState: "changed"
+    },
     {
       logicalName: "dnsmasq_main",
       targetPath: "/etc/dnsmasq.d/lantricate.conf",
@@ -127,4 +157,3 @@ export const mockSite: SiteViewModel = {
     }
   ]
 };
-

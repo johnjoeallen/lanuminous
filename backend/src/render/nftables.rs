@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::{
-    domain::{PolicyAction, RenderedArtifact, SiteConfig},
+    domain::{PolicyAction, PortProtocol, RenderedArtifact, SiteConfig},
     render::Renderer,
     util::hashing::sha256_string,
 };
@@ -17,10 +17,32 @@ impl Renderer for NftablesRenderer {
         let mut lines = vec![
             site.metadata.managed_prefix.clone(),
             "table inet lantricate {".to_string(),
+            "  chain prerouting {".to_string(),
+            "    type nat hook prerouting priority dstnat;".to_string(),
+        ];
+
+        for forward in &site.port_forwards.rules {
+            let protocol = match forward.protocol {
+                PortProtocol::Tcp => "tcp",
+                PortProtocol::Udp => "udp",
+            };
+            let destination_host = resolve_host_address(site, &forward.destination_host);
+            lines.push(format!(
+                "    # {}",
+                forward.description.as_deref().unwrap_or(&forward.name)
+            ));
+            lines.push(format!(
+                "    iifname \"wan\" {protocol} dport {} dnat to {}:{}",
+                forward.external_port, destination_host, forward.destination_port
+            ));
+        }
+
+        lines.extend([
+            "  }".to_string(),
             "  chain forward {".to_string(),
             "    type filter hook forward priority 0;".to_string(),
             "    policy drop;".to_string(),
-        ];
+        ]);
 
         for policy in &site.firewall.policies {
             let verdict = match policy.action {
@@ -48,4 +70,12 @@ impl Renderer for NftablesRenderer {
             contents,
         }])
     }
+}
+
+fn resolve_host_address(site: &SiteConfig, host_ref: &str) -> String {
+    site.hosts
+        .iter()
+        .find(|host| host.name == host_ref)
+        .and_then(|host| host.management_ip.clone())
+        .unwrap_or_else(|| host_ref.to_string())
 }

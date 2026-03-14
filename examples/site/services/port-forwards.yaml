@@ -1,0 +1,8 @@
+rules:
+  - name: jellyfin-https
+    protocol: tcp
+    external_port: 8443
+    destination_host: jellyfin
+    destination_port: 8096
+    source_zone: wan
+    description: Forward WAN 8443 to internal Jellyfin.

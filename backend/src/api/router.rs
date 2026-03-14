@@ -1,8 +1,4 @@
-use axum::{
-    extract::State,
-    routing::get,
-    Json, Router,
-};
+use axum::{extract::State, routing::get, Json, Router};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -18,11 +14,14 @@ pub struct ApiState {
 pub struct SiteApiView {
     pub name: String,
     pub description: String,
+    pub reverse_proxy_provider: String,
     pub networks: Vec<NetworkCard>,
     pub interfaces: Vec<InterfaceCard>,
     pub firewall_policies: Vec<FirewallPolicyCard>,
+    pub port_forwards: Vec<PortForwardCard>,
     pub ssids: Vec<SsidCard>,
     pub access_points: Vec<AccessPointCard>,
+    pub reverse_proxies: Vec<ReverseProxyCard>,
     pub artifacts: Vec<ArtifactCard>,
     pub deployments: Vec<DeploymentCard>,
 }
@@ -59,6 +58,18 @@ pub struct FirewallPolicyCard {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct PortForwardCard {
+    pub name: String,
+    pub protocol: String,
+    pub external_port: u16,
+    pub destination_host: String,
+    pub destination_port: u16,
+    pub source_zone: String,
+    pub summary: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SsidCard {
     pub name: String,
     pub vlan: u16,
@@ -74,6 +85,19 @@ pub struct AccessPointCard {
     pub group: String,
     pub uplink_port: String,
     pub ssids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReverseProxyCard {
+    pub name: String,
+    pub provider: String,
+    pub server_names: Vec<String>,
+    pub listen_port: u16,
+    pub backend_host: String,
+    pub backend_port: u16,
+    pub backend_scheme: String,
+    pub tls_mode: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -103,13 +127,19 @@ impl SiteApiView {
                 let interface = site
                     .interfaces
                     .iter()
-                    .find(|interface| interface.network_refs.iter().any(|name| name == &network.name))
+                    .find(|interface| {
+                        interface
+                            .network_refs
+                            .iter()
+                            .any(|name| name == &network.name)
+                    })
                     .map(|interface| interface.name.clone())
                     .or_else(|| {
-                        network
-                            .vlan
-                            .as_ref()
-                            .and_then(|vlan| vlan.parent_interface.as_ref().map(|parent| format!("{parent}.{}", vlan.id)))
+                        network.vlan.as_ref().and_then(|vlan| {
+                            vlan.parent_interface
+                                .as_ref()
+                                .map(|parent| format!("{parent}.{}", vlan.id))
+                        })
                     })
                     .unwrap_or_else(|| "unassigned".to_string());
 
@@ -154,6 +184,24 @@ impl SiteApiView {
             })
             .collect();
 
+        let port_forwards = site
+            .port_forwards
+            .rules
+            .iter()
+            .map(|rule| PortForwardCard {
+                name: rule.name.clone(),
+                protocol: format!("{:?}", rule.protocol).to_lowercase(),
+                external_port: rule.external_port,
+                destination_host: rule.destination_host.clone(),
+                destination_port: rule.destination_port,
+                source_zone: rule.source_zone.clone(),
+                summary: rule
+                    .description
+                    .clone()
+                    .unwrap_or_else(|| "Managed port forward".to_string()),
+            })
+            .collect();
+
         let ssids = site
             .wifi
             .ssids
@@ -182,6 +230,22 @@ impl SiteApiView {
             })
             .collect();
 
+        let reverse_proxies = site
+            .reverse_proxies
+            .sites
+            .iter()
+            .map(|proxy| ReverseProxyCard {
+                name: proxy.name.clone(),
+                provider: format!("{:?}", site.reverse_proxies.provider).to_lowercase(),
+                server_names: proxy.server_names.clone(),
+                listen_port: proxy.listen_port,
+                backend_host: proxy.backend.host_ref.clone(),
+                backend_port: proxy.backend.port,
+                backend_scheme: format!("{:?}", proxy.backend.scheme).to_lowercase(),
+                tls_mode: format!("{:?}", proxy.tls_mode).to_lowercase(),
+            })
+            .collect();
+
         let artifacts = site
             .services
             .iter()
@@ -202,11 +266,14 @@ impl SiteApiView {
                 .description
                 .clone()
                 .unwrap_or_else(|| "Lantricate managed site".to_string()),
+            reverse_proxy_provider: format!("{:?}", site.reverse_proxies.provider).to_lowercase(),
             networks,
             interfaces,
             firewall_policies,
+            port_forwards,
             ssids,
             access_points,
+            reverse_proxies,
             artifacts,
             deployments: vec![DeploymentCard {
                 id: "stage1-preview".to_string(),

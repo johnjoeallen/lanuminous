@@ -9,7 +9,7 @@ export function ArtifactsPage({ site }: ArtifactsPageProps) {
   return (
     <SectionPanel
       title="Managed artifacts"
-      subtitle="Renderer outputs that would be staged before any future apply step."
+      subtitle="Renderer outputs staged from dnsmasq, nftables, networking, and Apache proxy intent."
     >
       <div className="table-card">
         <table className="data-table">
@@ -38,4 +38,3 @@ export function ArtifactsPage({ site }: ArtifactsPageProps) {
     </SectionPanel>
   );
 }
-

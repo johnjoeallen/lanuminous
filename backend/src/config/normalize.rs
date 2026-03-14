@@ -3,8 +3,9 @@ use crate::{
     domain::{
         AccessPointDef, AccessPointGroupDef, ApBackend, DhcpConfig, DhcpPool, DnsConfig, DnsRecord,
         FirewallConfig, HostDef, HostInterfaceDef, InterfaceDef, ManagedPath, Metadata, NetworkDef,
-        PolicyRule, ReservationDef, RouteDef, ServiceDef, ServiceType, SiteConfig, UplinkDef,
-        VlanDef, WifiConfig, ZoneDef,
+        PolicyRule, PortForwardConfig, PortForwardRule, ProxyBackend, ReservationDef,
+        ReverseProxyConfig, ReverseProxyProvider, ReverseProxySite, RouteDef, ServiceDef,
+        ServiceType, SiteConfig, UplinkDef, VlanDef, WifiConfig, ZoneDef,
     },
 };
 
@@ -149,6 +150,43 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             .collect(),
     };
 
+    let port_forwards = PortForwardConfig {
+        rules: bundle
+            .port_forwards
+            .rules
+            .into_iter()
+            .map(|rule| PortForwardRule {
+                name: rule.name,
+                protocol: rule.protocol,
+                external_port: rule.external_port,
+                destination_host: rule.destination_host,
+                destination_port: rule.destination_port,
+                source_zone: rule.source_zone,
+                description: rule.description,
+            })
+            .collect(),
+    };
+
+    let reverse_proxies = ReverseProxyConfig {
+        provider: bundle.reverse_proxy.provider,
+        sites: bundle
+            .reverse_proxy
+            .sites
+            .into_iter()
+            .map(|site| ReverseProxySite {
+                name: site.name,
+                server_names: site.server_names,
+                listen_port: site.listen_port,
+                backend: ProxyBackend {
+                    host_ref: site.backend.host_ref,
+                    port: site.backend.port,
+                    scheme: site.backend.scheme,
+                },
+                tls_mode: site.tls_mode,
+            })
+            .collect(),
+    };
+
     let wifi = WifiConfig {
         controller: bundle
             .wifi_ssids
@@ -256,6 +294,22 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         }],
     });
 
+    if !reverse_proxies.sites.is_empty() {
+        let (service_name, service_type, reload_command, managed_path) =
+            reverse_proxy_service_definition(&reverse_proxies.provider);
+        services.push(ServiceDef {
+            name: service_name,
+            service_type,
+            enabled: true,
+            reload_command: Some(reload_command),
+            managed_paths: vec![ManagedPath {
+                logical_name: "reverse_proxy_main".to_string(),
+                path: managed_path,
+                service: Some("reverse-proxy".to_string()),
+            }],
+        });
+    }
+
     SiteConfig {
         metadata,
         interfaces,
@@ -264,8 +318,47 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         services,
         dns: Some(dns),
         dhcp: Some(dhcp),
+        port_forwards,
+        reverse_proxies,
         firewall,
         wifi,
         switches: Vec::new(),
+    }
+}
+
+fn reverse_proxy_service_definition(
+    provider: &ReverseProxyProvider,
+) -> (String, ServiceType, String, String) {
+    match provider {
+        ReverseProxyProvider::Apache2 => (
+            "apache2".to_string(),
+            ServiceType::Apache2,
+            "systemctl reload apache2".to_string(),
+            "/etc/apache2/sites-available/lantricate-proxies.conf".to_string(),
+        ),
+        ReverseProxyProvider::Nginx => (
+            "nginx".to_string(),
+            ServiceType::Nginx,
+            "systemctl reload nginx".to_string(),
+            "/etc/nginx/conf.d/lantricate-proxies.conf".to_string(),
+        ),
+        ReverseProxyProvider::Caddy => (
+            "caddy".to_string(),
+            ServiceType::Caddy,
+            "systemctl reload caddy".to_string(),
+            "/etc/caddy/conf.d/lantricate-proxies.caddy".to_string(),
+        ),
+        ReverseProxyProvider::Traefik => (
+            "traefik".to_string(),
+            ServiceType::Traefik,
+            "systemctl reload traefik".to_string(),
+            "/etc/traefik/dynamic/lantricate.yml".to_string(),
+        ),
+        ReverseProxyProvider::Haproxy => (
+            "haproxy".to_string(),
+            ServiceType::Haproxy,
+            "systemctl reload haproxy".to_string(),
+            "/etc/haproxy/lantricate.cfg".to_string(),
+        ),
     }
 }

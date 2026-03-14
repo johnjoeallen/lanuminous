@@ -8,7 +8,8 @@ use walkdir::WalkDir;
 
 use crate::config::raw::{
     InterfacesFile, RawApsFile, RawDhcpFile, RawDnsFile, RawGroupsFile, RawHostFile,
-    RawNetworkFile, RawPoliciesFile, RawServiceFile, RawSsidsFile, RawZonesFile, SiteFile,
+    RawNetworkFile, RawPoliciesFile, RawPortForwardsFile, RawReverseProxyFile, RawServiceFile,
+    RawSsidsFile, RawZonesFile, SiteFile,
 };
 
 #[derive(Debug, Clone)]
@@ -25,6 +26,8 @@ pub struct ConfigBundle {
     pub dns: RawDnsFile,
     pub dhcp: RawDhcpFile,
     pub nftables_service: Option<RawServiceFile>,
+    pub port_forwards: RawPortForwardsFile,
+    pub reverse_proxy: RawReverseProxyFile,
 }
 
 #[derive(Debug, Error)]
@@ -59,6 +62,17 @@ pub fn load_site_from_path(root: impl AsRef<Path>) -> Result<ConfigBundle, Confi
     let firewall_policies = read_yaml::<RawPoliciesFile>(&root.join("firewall/policies.yaml"))?;
     let dns = read_yaml::<RawDnsFile>(&root.join("services/dns.yaml"))?;
     let dhcp = read_yaml::<RawDhcpFile>(&root.join("services/dhcp.yaml"))?;
+    let port_forwards =
+        read_optional_yaml::<RawPortForwardsFile>(&root.join("services/port-forwards.yaml"))?
+            .unwrap_or_default();
+    let reverse_proxy =
+        read_optional_yaml::<RawReverseProxyFile>(&root.join("services/reverse-proxy.yaml"))?
+            .or_else(|| {
+                read_optional_yaml::<RawReverseProxyFile>(&root.join("services/apache2.yaml"))
+                    .ok()
+                    .flatten()
+            })
+            .unwrap_or_default();
 
     let nftables_path = root.join("services/nftables.yaml");
     let nftables_service = if nftables_path.exists() {
@@ -80,6 +94,8 @@ pub fn load_site_from_path(root: impl AsRef<Path>) -> Result<ConfigBundle, Confi
         dns,
         dhcp,
         nftables_service,
+        port_forwards,
+        reverse_proxy,
     })
 }
 
@@ -100,6 +116,17 @@ where
         path: path.to_path_buf(),
         source,
     })
+}
+
+fn read_optional_yaml<T>(path: &Path) -> Result<Option<T>, ConfigError>
+where
+    T: serde::de::DeserializeOwned,
+{
+    if !path.exists() {
+        return Ok(None);
+    }
+
+    read_yaml(path).map(Some)
 }
 
 fn load_yaml_dir<T>(path: &Path) -> Result<Vec<T>, ConfigError>

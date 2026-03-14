@@ -2,6 +2,7 @@ export type AppSection =
   | "overview"
   | "networks"
   | "firewall"
+  | "ingress"
   | "wifi"
   | "artifacts"
   | "deployments";
@@ -9,11 +10,14 @@ export type AppSection =
 export interface SiteViewModel {
   name: string;
   description: string;
+  reverseProxyProvider: string;
   networks: NetworkCard[];
   interfaces: InterfaceCard[];
   firewallPolicies: FirewallPolicyCard[];
+  portForwards: PortForwardCard[];
   ssids: SsidCard[];
   accessPoints: AccessPointCard[];
+  reverseProxies: ReverseProxyCard[];
   artifacts: ArtifactCard[];
   deployments: DeploymentCard[];
 }
@@ -42,6 +46,16 @@ export interface FirewallPolicyCard {
   summary: string;
 }
 
+export interface PortForwardCard {
+  name: string;
+  protocol: string;
+  externalPort: number;
+  destinationHost: string;
+  destinationPort: number;
+  sourceZone: string;
+  summary: string;
+}
+
 export interface SsidCard {
   name: string;
   vlan: number;
@@ -55,6 +69,17 @@ export interface AccessPointCard {
   group: string;
   uplinkPort: string;
   ssids: string[];
+}
+
+export interface ReverseProxyCard {
+  name: string;
+  provider: string;
+  serverNames: string[];
+  listenPort: number;
+  backendHost: string;
+  backendPort: number;
+  backendScheme: string;
+  tlsMode: string;
 }
 
 export interface ArtifactCard {

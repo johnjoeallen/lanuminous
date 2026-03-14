@@ -210,3 +210,44 @@ pub struct RawServiceFile {
     pub enabled: bool,
     pub reload_command: Option<String>,
 }
+
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct RawPortForwardsFile {
+    #[serde(default)]
+    pub rules: Vec<RawPortForwardRule>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawPortForwardRule {
+    pub name: String,
+    pub protocol: crate::domain::PortProtocol,
+    pub external_port: u16,
+    pub destination_host: String,
+    pub destination_port: u16,
+    pub source_zone: String,
+    pub description: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct RawReverseProxyFile {
+    #[serde(default)]
+    pub provider: crate::domain::ReverseProxyProvider,
+    #[serde(default)]
+    pub sites: Vec<RawReverseProxySite>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawReverseProxySite {
+    pub name: String,
+    pub server_names: Vec<String>,
+    pub listen_port: u16,
+    pub backend: RawProxyBackend,
+    pub tls_mode: crate::domain::ProxyTlsMode,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawProxyBackend {
+    pub host_ref: String,
+    pub port: u16,
+    pub scheme: crate::domain::ProxyScheme,
+}

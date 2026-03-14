@@ -26,7 +26,24 @@ export function FirewallPage({ site }: FirewallPageProps) {
           ))}
         </div>
       </SectionPanel>
+
+      <SectionPanel
+        title="NAT and ingress edge"
+        subtitle="Port forwards modeled as canonical ingress intent, rendered later into nftables."
+      >
+        <div className="summary-grid">
+          {site.portForwards.map((rule) => (
+            <article key={rule.name} className="summary-card">
+              <span>{rule.sourceZone}</span>
+              <strong>
+                {rule.protocol}:{rule.externalPort} {"->"} {rule.destinationHost}:
+                {rule.destinationPort}
+              </strong>
+              <p>{rule.summary}</p>
+            </article>
+          ))}
+        </div>
+      </SectionPanel>
     </>
   );
 }
-

@@ -40,6 +40,11 @@ pub fn validate_site(site: &SiteConfig) -> Vec<ValidationIssue> {
         .iter()
         .map(|group| group.name.clone())
         .collect::<HashSet<_>>();
+    let host_names = site
+        .hosts
+        .iter()
+        .map(|host| host.name.clone())
+        .collect::<HashSet<_>>();
 
     for interface in &site.interfaces {
         for network in &interface.network_refs {
@@ -112,6 +117,40 @@ pub fn validate_site(site: &SiteConfig) -> Vec<ValidationIssue> {
                 issues.push(error(
                     &format!("wifi.access_points.{}", ap.name),
                     &format!("unknown AP group `{group}`"),
+                ));
+            }
+        }
+    }
+
+    for rule in &site.port_forwards.rules {
+        if !zone_names.contains(&rule.source_zone) {
+            issues.push(error(
+                &format!("port_forwards.{}", rule.name),
+                &format!("unknown source zone `{}`", rule.source_zone),
+            ));
+        }
+        if !host_names.contains(&rule.destination_host) {
+            issues.push(error(
+                &format!("port_forwards.{}", rule.name),
+                &format!("unknown destination host `{}`", rule.destination_host),
+            ));
+        }
+    }
+
+    let mut server_names = HashSet::new();
+    for proxy in &site.reverse_proxies.sites {
+        if !host_names.contains(&proxy.backend.host_ref) {
+            issues.push(error(
+                &format!("reverse_proxies.{}", proxy.name),
+                &format!("unknown backend host `{}`", proxy.backend.host_ref),
+            ));
+        }
+
+        for server_name in &proxy.server_names {
+            if !server_names.insert(server_name.clone()) {
+                issues.push(error(
+                    &format!("reverse_proxies.{}", proxy.name),
+                    &format!("duplicate apache server name `{server_name}`"),
                 ));
             }
         }
