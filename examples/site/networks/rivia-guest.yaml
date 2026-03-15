@@ -1,7 +1,7 @@
-name: guest
+name: rivia-guest
 cidr: 10.0.30.0/24
-zone: guest
-dns_domain: guest.lan
+zone: rivia-guest
+dns_domain: rivia-guest.lan
 vlan: 30
 parent_interface: enp3s0
 dhcp:

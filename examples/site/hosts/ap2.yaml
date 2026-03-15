@@ -1,6 +1,6 @@
 name: ap2
 role: access_point
-network: wifi
+network: rivia-home
 management_ip: 10.0.10.3
 wifi:
   ap_group: indoor

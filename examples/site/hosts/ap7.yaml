@@ -1,10 +1,11 @@
-name: ap1
+name: ap7
 role: access_point
 network: rivia-home
-management_ip: 10.0.10.2
+management_ip: 10.0.10.8
 wifi:
   ap_group: indoor
   ssids:
     - HomeWiFi
     - IoTWiFi
     - GuestWiFi
+

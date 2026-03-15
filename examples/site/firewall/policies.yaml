@@ -5,23 +5,28 @@ policies:
     destination_zone: wan
     allowed_services: [any]
     description: Trusted lab clients can access the internet.
-  - name: wifi-internet
+  - name: rivia-home-internet
     action: accept
-    source_zone: wifi
+    source_zone: rivia-home
     destination_zone: wan
     allowed_services: [dns, http, https]
     description: Wi-Fi clients can access the internet.
-  - name: iot-jellyfin
+  - name: rivia-iot-jellyfin
     action: accept
-    source_zone: iot
+    source_zone: rivia-iot
     destination_zone: lab
     allowed_services: [http, https]
     destination_hosts: [jellyfin]
     description: IoT devices may reach Jellyfin only.
-  - name: guest-internet
+  - name: rivia-iot-internet
     action: accept
-    source_zone: guest
+    source_zone: rivia-iot
+    destination_zone: wan
+    allowed_services: [dns, http, https]
+    description: IoT devices can access WAN services such as streaming platforms.
+  - name: rivia-guest-internet
+    action: accept
+    source_zone: rivia-guest
     destination_zone: wan
     allowed_services: [dns, http, https]
     description: Guests can access the internet only.
-

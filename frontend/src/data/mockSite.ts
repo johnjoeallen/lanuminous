@@ -14,25 +14,25 @@ export const mockSite: SiteViewModel = {
       purpose: "Trusted lab and management network"
     },
     {
-      name: "wifi",
+      name: "rivia-home",
       cidr: "10.0.10.0/24",
-      zone: "wifi",
+      zone: "rivia-home",
       vlan: 10,
       interface: "enp3s0.10",
       purpose: "Primary client Wi-Fi"
     },
     {
-      name: "iot",
+      name: "rivia-iot",
       cidr: "10.0.20.0/24",
-      zone: "iot",
+      zone: "rivia-iot",
       vlan: 20,
       interface: "enp3s0.20",
       purpose: "Restricted IoT segment"
     },
     {
-      name: "guest",
+      name: "rivia-guest",
       cidr: "10.0.30.0/24",
-      zone: "guest",
+      zone: "rivia-guest",
       vlan: 30,
       interface: "enp3s0.30",
       purpose: "Internet-only guest Wi-Fi"
@@ -45,7 +45,7 @@ export const mockSite: SiteViewModel = {
       name: "enp3s0",
       role: "wifi_uplink",
       addresses: ["10.0.10.1/24"],
-      networkRefs: ["wifi", "iot", "guest"]
+      networkRefs: ["rivia-home", "rivia-iot", "rivia-guest"]
     }
   ],
   firewallPolicies: [
@@ -57,22 +57,29 @@ export const mockSite: SiteViewModel = {
       summary: "Trusted lab clients can access anything upstream."
     },
     {
-      name: "wifi-internet",
-      sourceZone: "wifi",
+      name: "rivia-home-internet",
+      sourceZone: "rivia-home",
       destinationZone: "wan",
       action: "accept",
       summary: "Wi-Fi clients can reach DNS, HTTP, and HTTPS."
     },
     {
-      name: "iot-jellyfin",
-      sourceZone: "iot",
+      name: "rivia-iot-jellyfin",
+      sourceZone: "rivia-iot",
       destinationZone: "lab",
       action: "accept",
       summary: "IoT devices can reach Jellyfin only."
     },
     {
-      name: "guest-internet",
-      sourceZone: "guest",
+      name: "rivia-iot-internet",
+      sourceZone: "rivia-iot",
+      destinationZone: "wan",
+      action: "accept",
+      summary: "IoT devices can reach WAN services such as streaming platforms."
+    },
+    {
+      name: "rivia-guest-internet",
+      sourceZone: "rivia-guest",
       destinationZone: "wan",
       action: "accept",
       summary: "Guest clients can access the internet only."
@@ -90,9 +97,9 @@ export const mockSite: SiteViewModel = {
     }
   ],
   ssids: [
-    { name: "HomeWiFi", vlan: 10, zone: "wifi", groups: ["indoor"] },
-    { name: "IoTWiFi", vlan: 20, zone: "iot", groups: ["indoor"] },
-    { name: "GuestWiFi", vlan: 30, zone: "guest", groups: ["indoor"] }
+    { name: "HomeWiFi", vlan: 10, zone: "rivia-home", groups: ["indoor"] },
+    { name: "IoTWiFi", vlan: 20, zone: "rivia-iot", groups: ["indoor"] },
+    { name: "GuestWiFi", vlan: 30, zone: "rivia-guest", groups: ["indoor"] }
   ],
   accessPoints: [
     {
@@ -107,6 +114,48 @@ export const mockSite: SiteViewModel = {
       managementIp: "10.0.10.3",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/11",
+      ssids: ["HomeWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap3",
+      managementIp: "10.0.10.4",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/12",
+      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap4",
+      managementIp: "10.0.10.5",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/13",
+      ssids: ["HomeWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap5",
+      managementIp: "10.0.10.6",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/14",
+      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap6",
+      managementIp: "10.0.10.7",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/15",
+      ssids: ["HomeWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap7",
+      managementIp: "10.0.10.8",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/16",
+      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+    },
+    {
+      name: "ap8",
+      managementIp: "10.0.10.9",
+      group: "indoor",
+      uplinkPort: "core-sw1 ge-0/0/17",
       ssids: ["HomeWiFi", "GuestWiFi"]
     }
   ],

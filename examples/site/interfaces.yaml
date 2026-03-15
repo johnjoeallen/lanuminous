@@ -17,11 +17,10 @@ interfaces:
     addresses:
       - 10.0.10.1/24
     network_refs:
-      - wifi
-      - iot
-      - guest
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
     vlan_tags:
       - 10
       - 20
       - 30
-

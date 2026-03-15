@@ -13,7 +13,7 @@ fn normalizes_bundle_into_canonical_model() {
 
     assert_eq!(site.metadata.name, "Lantricate Demo Site");
     assert_eq!(site.networks.len(), 4);
-    assert_eq!(site.firewall.policies.len(), 4);
+    assert_eq!(site.firewall.policies.len(), 5);
     assert_eq!(site.wifi.ssids.len(), 3);
     assert_eq!(site.port_forwards.rules.len(), 1);
     assert_eq!(site.reverse_proxies.sites.len(), 1);

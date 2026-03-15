@@ -1,7 +1,7 @@
-name: iot
+name: rivia-iot
 cidr: 10.0.20.0/24
-zone: iot
-dns_domain: iot.lan
+zone: rivia-iot
+dns_domain: rivia-iot.lan
 vlan: 20
 parent_interface: enp3s0
 dhcp:

@@ -9,12 +9,11 @@ interfaces:
     network: lab
     address: 10.0.0.1/24
   - name: enp3s0.10
-    network: wifi
+    network: rivia-home
     address: 10.0.10.1/24
   - name: enp3s0.20
-    network: iot
+    network: rivia-iot
     address: 10.0.20.1/24
   - name: enp3s0.30
-    network: guest
+    network: rivia-guest
     address: 10.0.30.1/24
-

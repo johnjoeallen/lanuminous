@@ -2,17 +2,16 @@ controller: manual
 ssids:
   - name: HomeWiFi
     vlan: 10
-    zone: wifi
+    zone: rivia-home
     broadcast_groups:
       - indoor
   - name: IoTWiFi
     vlan: 20
-    zone: iot
+    zone: rivia-iot
     broadcast_groups:
       - indoor
   - name: GuestWiFi
     vlan: 30
-    zone: guest
+    zone: rivia-guest
     broadcast_groups:
       - indoor
-

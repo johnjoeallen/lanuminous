@@ -2,15 +2,14 @@ zones:
   - name: lab
     networks: [lab]
     description: Trusted lab and management network.
-  - name: wifi
-    networks: [wifi]
+  - name: rivia-home
+    networks: [rivia-home]
     description: Primary Wi-Fi clients.
-  - name: iot
-    networks: [iot]
+  - name: rivia-iot
+    networks: [rivia-iot]
     description: Isolated IoT devices.
-  - name: guest
-    networks: [guest]
+  - name: rivia-guest
+    networks: [rivia-guest]
     description: Guest-only internet access.
   - name: wan
     description: Upstream internet zone.
-

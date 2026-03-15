@@ -1,7 +1,7 @@
-name: wifi
+name: rivia-home
 cidr: 10.0.10.0/24
-zone: wifi
-dns_domain: wifi.lan
+zone: rivia-home
+dns_domain: rivia-home.lan
 vlan: 10
 parent_interface: enp3s0
 dhcp:
