@@ -10,9 +10,9 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - IoTWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
   - name: ap2
     management_ip: 10.0.10.3
     group: indoor
@@ -24,8 +24,8 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-guest
   - name: ap3
     management_ip: 10.0.10.4
     group: indoor
@@ -37,9 +37,9 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - IoTWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
   - name: ap4
     management_ip: 10.0.10.5
     group: indoor
@@ -51,8 +51,8 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-guest
   - name: ap5
     management_ip: 10.0.10.6
     group: indoor
@@ -64,9 +64,9 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - IoTWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
   - name: ap6
     management_ip: 10.0.10.7
     group: indoor
@@ -78,8 +78,8 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-guest
   - name: ap7
     management_ip: 10.0.10.8
     group: indoor
@@ -91,9 +91,9 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - IoTWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
   - name: ap8
     management_ip: 10.0.10.9
     group: indoor
@@ -105,5 +105,5 @@ aps:
       tagged_vlans: [20, 30]
       expected_networks: [rivia-home, rivia-iot, rivia-guest]
     ssids:
-      - HomeWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-guest

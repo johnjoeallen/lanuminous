@@ -15,6 +15,7 @@ pub struct SiteApiView {
     pub name: String,
     pub description: String,
     pub reverse_proxy_provider: String,
+    pub wifi_expose_all_ssids_on_all_aps: bool,
     pub networks: Vec<NetworkCard>,
     pub interfaces: Vec<InterfaceCard>,
     pub firewall_policies: Vec<FirewallPolicyCard>,
@@ -33,6 +34,7 @@ pub struct NetworkCard {
     pub cidr: String,
     pub zone: String,
     pub vlan: Option<u16>,
+    pub vlan_label: Option<String>,
     pub interface: String,
     pub purpose: String,
 }
@@ -73,6 +75,7 @@ pub struct PortForwardCard {
 pub struct SsidCard {
     pub name: String,
     pub vlan: u16,
+    pub vlan_label: String,
     pub zone: String,
     pub groups: Vec<String>,
 }
@@ -148,6 +151,7 @@ impl SiteApiView {
                     cidr: network.cidr.clone(),
                     zone: network.zone.clone(),
                     vlan: network.vlan.as_ref().map(|vlan| vlan.id),
+                    vlan_label: network.vlan.as_ref().map(|_| network.name.clone()),
                     interface,
                     purpose: network
                         .dns_domain
@@ -209,6 +213,7 @@ impl SiteApiView {
             .map(|ssid| SsidCard {
                 name: ssid.name.clone(),
                 vlan: ssid.vlan,
+                vlan_label: ssid.name.clone(),
                 zone: ssid.zone.clone(),
                 groups: ssid.broadcast_groups.clone(),
             })
@@ -267,6 +272,7 @@ impl SiteApiView {
                 .clone()
                 .unwrap_or_else(|| "Lantricate managed site".to_string()),
             reverse_proxy_provider: format!("{:?}", site.reverse_proxies.provider).to_lowercase(),
+            wifi_expose_all_ssids_on_all_aps: site.wifi.expose_all_ssids_on_all_aps,
             networks,
             interfaces,
             firewall_policies,

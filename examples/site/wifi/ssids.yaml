@@ -1,16 +1,17 @@
 controller: manual
+expose_all_ssids_on_all_aps: true
 ssids:
-  - name: HomeWiFi
+  - name: rivia-home
     vlan: 10
     zone: rivia-home
     broadcast_groups:
       - indoor
-  - name: IoTWiFi
+  - name: rivia-iot
     vlan: 20
     zone: rivia-iot
     broadcast_groups:
       - indoor
-  - name: GuestWiFi
+  - name: rivia-guest
     vlan: 30
     zone: rivia-guest
     broadcast_groups:

@@ -99,6 +99,8 @@ pub struct RawHostWifiIntent {
 pub struct RawSsidsFile {
     #[serde(default)]
     pub controller: Option<ApController>,
+    #[serde(default)]
+    pub expose_all_ssids_on_all_aps: bool,
     pub ssids: Vec<RawSsid>,
 }
 

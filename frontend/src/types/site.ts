@@ -11,6 +11,7 @@ export interface SiteViewModel {
   name: string;
   description: string;
   reverseProxyProvider: string;
+  wifiExposeAllSsidsOnAllAps: boolean;
   networks: NetworkCard[];
   interfaces: InterfaceCard[];
   firewallPolicies: FirewallPolicyCard[];
@@ -27,6 +28,7 @@ export interface NetworkCard {
   cidr: string;
   zone: string;
   vlan: number | null;
+  vlanLabel: string | null;
   interface: string;
   purpose: string;
 }
@@ -59,6 +61,7 @@ export interface PortForwardCard {
 export interface SsidCard {
   name: string;
   vlan: number;
+  vlanLabel: string;
   zone: string;
   groups: string[];
 }

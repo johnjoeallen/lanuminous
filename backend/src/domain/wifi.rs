@@ -6,6 +6,7 @@ use crate::domain::UplinkDef;
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct WifiConfig {
     pub controller: ApController,
+    pub expose_all_ssids_on_all_aps: bool,
     pub ssids: Vec<SsidDef>,
     pub access_points: Vec<AccessPointDef>,
     pub groups: Vec<AccessPointGroupDef>,
@@ -15,6 +16,7 @@ impl Default for WifiConfig {
     fn default() -> Self {
         Self {
             controller: ApController::Manual,
+            expose_all_ssids_on_all_aps: false,
             ssids: Vec::new(),
             access_points: Vec::new(),
             groups: Vec::new(),

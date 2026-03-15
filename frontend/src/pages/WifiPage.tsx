@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { SectionPanel } from "../components/SectionPanel";
 import { SiteViewModel } from "../types/site";
 
@@ -6,6 +7,12 @@ interface WifiPageProps {
 }
 
 export function WifiPage({ site }: WifiPageProps) {
+  const [exposeAllSsids, setExposeAllSsids] = useState(site.wifiExposeAllSsidsOnAllAps);
+
+  useEffect(() => {
+    setExposeAllSsids(site.wifiExposeAllSsidsOnAllAps);
+  }, [site.wifiExposeAllSsidsOnAllAps]);
+
   return (
     <>
       <SectionPanel
@@ -15,9 +22,11 @@ export function WifiPage({ site }: WifiPageProps) {
         <div className="summary-grid">
           {site.ssids.map((ssid) => (
             <article key={ssid.name} className="summary-card">
-              <span>VLAN {ssid.vlan}</span>
+              <span>{ssid.vlanLabel}</span>
               <strong>{ssid.name}</strong>
-              <p>Zone: {ssid.zone}</p>
+              <p>
+                Zone: {ssid.zone} | Internal tag: {ssid.vlan}
+              </p>
               <small>Groups: {ssid.groups.join(", ")}</small>
             </article>
           ))}
@@ -27,15 +36,35 @@ export function WifiPage({ site }: WifiPageProps) {
       <SectionPanel
         title="Access point inventory"
         subtitle="Intended AP state even before vendor/controller integration exists."
+        headerAction={
+          <label className="toggle-field">
+            <input
+              type="checkbox"
+              checked={exposeAllSsids}
+              onChange={(event) => setExposeAllSsids(event.target.checked)}
+            />
+            <span>Expose all SSIDs on all APs</span>
+          </label>
+        }
       >
         <div className="summary-grid">
           {site.accessPoints.map((ap) => (
-            <article key={ap.name} className="summary-card">
+            <article key={ap.name} className="summary-card ap-card">
               <span>{ap.group}</span>
               <strong>{ap.name}</strong>
               <p>Mgmt: {ap.managementIp}</p>
-              <small>Uplink: {ap.uplinkPort}</small>
-              <small>SSIDs: {ap.ssids.join(", ")}</small>
+              <div className="meta-list">
+                <div className="meta-row">
+                  <small className="meta-label">Uplink</small>
+                  <small>{ap.uplinkPort}</small>
+                </div>
+                <div className="meta-row">
+                  <small className="meta-label">SSIDs</small>
+                  <small>
+                    {(exposeAllSsids ? site.ssids.map((ssid) => ssid.name) : ap.ssids).join(", ")}
+                  </small>
+                </div>
+              </div>
             </article>
           ))}
         </div>
@@ -43,4 +72,3 @@ export function WifiPage({ site }: WifiPageProps) {
     </>
   );
 }
-

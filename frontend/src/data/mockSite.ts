@@ -4,12 +4,14 @@ export const mockSite: SiteViewModel = {
   name: "Lantricate Demo Site",
   description: "Intent model for a Linux gateway, segmented Wi-Fi, and staged artifact generation.",
   reverseProxyProvider: "nginx",
+  wifiExposeAllSsidsOnAllAps: true,
   networks: [
     {
       name: "lab",
       cidr: "10.0.0.0/24",
       zone: "lab",
       vlan: null,
+      vlanLabel: null,
       interface: "enp2s0",
       purpose: "Trusted lab and management network"
     },
@@ -18,6 +20,7 @@ export const mockSite: SiteViewModel = {
       cidr: "10.0.10.0/24",
       zone: "rivia-home",
       vlan: 10,
+      vlanLabel: "rivia-home",
       interface: "enp3s0.10",
       purpose: "Primary client Wi-Fi"
     },
@@ -26,6 +29,7 @@ export const mockSite: SiteViewModel = {
       cidr: "10.0.20.0/24",
       zone: "rivia-iot",
       vlan: 20,
+      vlanLabel: "rivia-iot",
       interface: "enp3s0.20",
       purpose: "Restricted IoT segment"
     },
@@ -34,6 +38,7 @@ export const mockSite: SiteViewModel = {
       cidr: "10.0.30.0/24",
       zone: "rivia-guest",
       vlan: 30,
+      vlanLabel: "rivia-guest",
       interface: "enp3s0.30",
       purpose: "Internet-only guest Wi-Fi"
     }
@@ -97,9 +102,9 @@ export const mockSite: SiteViewModel = {
     }
   ],
   ssids: [
-    { name: "HomeWiFi", vlan: 10, zone: "rivia-home", groups: ["indoor"] },
-    { name: "IoTWiFi", vlan: 20, zone: "rivia-iot", groups: ["indoor"] },
-    { name: "GuestWiFi", vlan: 30, zone: "rivia-guest", groups: ["indoor"] }
+    { name: "rivia-home", vlan: 10, vlanLabel: "rivia-home", zone: "rivia-home", groups: ["indoor"] },
+    { name: "rivia-iot", vlan: 20, vlanLabel: "rivia-iot", zone: "rivia-iot", groups: ["indoor"] },
+    { name: "rivia-guest", vlan: 30, vlanLabel: "rivia-guest", zone: "rivia-guest", groups: ["indoor"] }
   ],
   accessPoints: [
     {
@@ -107,56 +112,56 @@ export const mockSite: SiteViewModel = {
       managementIp: "10.0.10.2",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/10",
-      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-iot", "rivia-guest"]
     },
     {
       name: "ap2",
       managementIp: "10.0.10.3",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/11",
-      ssids: ["HomeWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-guest"]
     },
     {
       name: "ap3",
       managementIp: "10.0.10.4",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/12",
-      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-iot", "rivia-guest"]
     },
     {
       name: "ap4",
       managementIp: "10.0.10.5",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/13",
-      ssids: ["HomeWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-guest"]
     },
     {
       name: "ap5",
       managementIp: "10.0.10.6",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/14",
-      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-iot", "rivia-guest"]
     },
     {
       name: "ap6",
       managementIp: "10.0.10.7",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/15",
-      ssids: ["HomeWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-guest"]
     },
     {
       name: "ap7",
       managementIp: "10.0.10.8",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/16",
-      ssids: ["HomeWiFi", "IoTWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-iot", "rivia-guest"]
     },
     {
       name: "ap8",
       managementIp: "10.0.10.9",
       group: "indoor",
       uplinkPort: "core-sw1 ge-0/0/17",
-      ssids: ["HomeWiFi", "GuestWiFi"]
+      ssids: ["rivia-home", "rivia-guest"]
     }
   ],
   reverseProxies: [

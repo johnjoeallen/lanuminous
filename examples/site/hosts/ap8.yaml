@@ -5,5 +5,5 @@ management_ip: 10.0.10.9
 wifi:
   ap_group: indoor
   ssids:
-    - HomeWiFi
-    - GuestWiFi
+    - rivia-home
+    - rivia-guest

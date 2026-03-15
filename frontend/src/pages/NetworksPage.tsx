@@ -30,7 +30,11 @@ export function NetworksPage({ site }: NetworksPageProps) {
                   <td>{network.name}</td>
                   <td>{network.cidr}</td>
                   <td>{network.zone}</td>
-                  <td>{network.vlan ?? "native"}</td>
+                  <td>
+                    {network.vlanLabel
+                      ? `${network.vlanLabel} (${network.vlan})`
+                      : "native"}
+                  </td>
                   <td>{network.interface}</td>
                   <td>{network.purpose}</td>
                 </tr>
@@ -58,4 +62,3 @@ export function NetworksPage({ site }: NetworksPageProps) {
     </>
   );
 }
-

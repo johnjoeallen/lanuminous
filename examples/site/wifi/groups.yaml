@@ -2,9 +2,9 @@ groups:
   - name: indoor
     description: Main indoor AP group.
     ssids:
-      - HomeWiFi
-      - IoTWiFi
-      - GuestWiFi
+      - rivia-home
+      - rivia-iot
+      - rivia-guest
     ap_names:
       - ap1
       - ap2

@@ -270,6 +270,64 @@ body {
   color: var(--muted);
 }
 
+.ap-card {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.meta-list {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+}
+
+.meta-row {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.meta-label {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-heading {
+  margin-bottom: 0;
+}
+
+.section-action {
+  flex-shrink: 0;
+}
+
+.toggle-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(17, 30, 44, 0.92);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.toggle-field input {
+  accent-color: #57e6b1;
+}
+
+.toggle-field span {
+  white-space: nowrap;
+}
+
 .section-heading {
   margin-bottom: 1rem;
 }
@@ -386,5 +444,13 @@ table {
 
   .hero-panel h2 {
     font-size: 2rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+  }
+
+  .toggle-field span {
+    white-space: normal;
   }
 }

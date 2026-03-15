@@ -192,6 +192,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             .wifi_ssids
             .controller
             .unwrap_or(crate::domain::ApController::Manual),
+        expose_all_ssids_on_all_aps: bundle.wifi_ssids.expose_all_ssids_on_all_aps,
         ssids: bundle
             .wifi_ssids
             .ssids
