@@ -1,7 +1,7 @@
-name: labwifi
+name: rivia-lab
 cidr: 10.0.40.0/24
 description: Trusted Wi-Fi network for lab devices and administration
-dns_domain: labwifi.lan
+dns_domain: rivia-lab.lan
 vlan: 40
 parent_interface: enp3s0
 dhcp:

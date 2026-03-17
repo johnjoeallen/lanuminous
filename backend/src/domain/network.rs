@@ -36,6 +36,7 @@ pub struct NetworkDef {
     pub name: String,
     pub cidr: String,
     pub zone: String,
+    pub description: String,
     pub dns_domain: Option<String>,
     pub vlan: Option<VlanDef>,
     pub dhcp_pool: Option<DhcpPool>,

@@ -42,7 +42,7 @@ export function OverviewPage({ site }: OverviewPageProps) {
           </article>
           <article className="summary-card">
             <span>Wi-Fi segmentation</span>
-            <strong>{site.ssids.length} SSIDs mapped to 3 VLAN-backed zones</strong>
+            <strong>{site.ssids.length} Wi-Fi networks with separate policy and routing</strong>
           </article>
           <article className="summary-card">
             <span>Apply posture</span>

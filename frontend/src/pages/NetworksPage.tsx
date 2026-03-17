@@ -1,5 +1,6 @@
 import { SectionPanel } from "../components/SectionPanel";
 import { SiteViewModel } from "../types/site";
+import { humanizeScopedName } from "../utils/display";
 
 interface NetworksPageProps {
   site: SiteViewModel;
@@ -7,6 +8,7 @@ interface NetworksPageProps {
 
 export function NetworksPage({ site }: NetworksPageProps) {
   const formatInterfaceRole = (role: string) => role.replaceAll("_", " ").toUpperCase();
+  const displayName = (value: string) => humanizeScopedName(site.name, value);
   const hasWanInterface = site.interfaces.some((iface) => iface.role === "wan");
   const hasInternalNetworks = site.interfaces.some(
     (iface) => iface.role !== "wan" && iface.networkRefs.length > 0
@@ -39,29 +41,27 @@ export function NetworksPage({ site }: NetworksPageProps) {
 
       <SectionPanel
         title="Network inventory"
-        subtitle="Canonical networks, VLAN assignments, and interface bindings."
+        subtitle="The minimum network definitions needed to route traffic and explain what each network is for."
       >
         <div className="table-card">
           <table className="data-table">
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Description</th>
                 <th>CIDR</th>
-                <th>Zone</th>
                 <th>VLAN</th>
                 <th>Interface</th>
-                <th>Purpose</th>
               </tr>
             </thead>
             <tbody>
               {site.networks.map((network) => (
                 <tr key={network.name}>
-                  <td>{network.name}</td>
+                  <td>{displayName(network.name)}</td>
+                  <td>{network.description}</td>
                   <td>{network.cidr}</td>
-                  <td>{network.zone}</td>
-                  <td>{network.vlanLabel ?? "native"}</td>
-                  <td>{network.interface}</td>
-                  <td>{network.purpose}</td>
+                  <td>{network.vlan ? displayName(network.name) : "n/a"}</td>
+                  <td>{displayName(network.interface)}</td>
                 </tr>
               ))}
             </tbody>
@@ -70,8 +70,8 @@ export function NetworksPage({ site }: NetworksPageProps) {
       </SectionPanel>
 
       <SectionPanel
-        title="Gateway interfaces"
-        subtitle="Physical and logical entry points associated with network intent."
+        title="Physical network segments"
+        subtitle="The gateway's physical interfaces and the logical names used to manage them."
       >
         <div className="summary-grid">
           {site.interfaces.map((iface) => (
@@ -81,7 +81,9 @@ export function NetworksPage({ site }: NetworksPageProps) {
               <p>Logical: {iface.logicalName}</p>
               <p>Physical: {iface.name}</p>
               <small>Addresses: {iface.addresses.join(", ")}</small>
-              <small>Networks: {iface.networkRefs.length ? iface.networkRefs.join(", ") : "none"}</small>
+              <small>
+                Networks: {iface.networkRefs.length ? iface.networkRefs.map(displayName).join(", ") : "none"}
+              </small>
             </article>
           ))}
         </div>

@@ -30,15 +30,15 @@ policies:
     destination_zone: wan
     allowed_services: [dns, http, https]
     description: Guests can access the internet only.
-  - name: labwifi-internet
+  - name: rivia-lab-internet
     action: accept
-    source_zone: labwifi
+    source_zone: rivia-lab
     destination_zone: wan
     allowed_services: [any]
     description: Trusted lab Wi-Fi clients can access the internet.
-  - name: labwifi-lab
+  - name: rivia-lab-lab
     action: accept
-    source_zone: labwifi
+    source_zone: rivia-lab
     destination_zone: lab
     allowed_services: [any]
     description: Trusted lab Wi-Fi clients can access wired lab systems.

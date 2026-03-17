@@ -43,7 +43,11 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         .map(|network| NetworkDef {
             name: network.name.clone(),
             cidr: network.cidr,
-            zone: network.zone,
+            zone: network.zone.unwrap_or_else(|| network.name.clone()),
+            description: network
+                .description
+                .or_else(|| network.dns_domain.clone())
+                .unwrap_or_else(|| "Managed network".to_string()),
             dns_domain: network.dns_domain,
             vlan: network.vlan.map(|id| VlanDef {
                 id,

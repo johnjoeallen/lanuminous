@@ -39,7 +39,8 @@ pub struct RawInterface {
 pub struct RawNetworkFile {
     pub name: String,
     pub cidr: String,
-    pub zone: String,
+    pub zone: Option<String>,
+    pub description: Option<String>,
     pub dns_domain: Option<String>,
     pub vlan: Option<u16>,
     pub parent_interface: Option<String>,

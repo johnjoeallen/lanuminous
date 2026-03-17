@@ -16,8 +16,8 @@ ssids:
     zone: rivia-guest
     broadcast_groups:
       - indoor
-  - name: labwifi
+  - name: rivia-lab
     vlan: 40
-    zone: labwifi
+    zone: rivia-lab
     broadcast_groups:
       - indoor

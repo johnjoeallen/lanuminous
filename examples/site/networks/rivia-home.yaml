@@ -1,6 +1,6 @@
 name: rivia-home
 cidr: 10.0.10.0/24
-zone: rivia-home
+description: Primary network for everyday devices with normal internet access
 dns_domain: rivia-home.lan
 vlan: 10
 parent_interface: enp3s0
@@ -8,4 +8,3 @@ dhcp:
   start: 10.0.10.100
   end: 10.0.10.199
   lease_time: 8h
-

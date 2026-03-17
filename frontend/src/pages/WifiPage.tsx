@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SectionPanel } from "../components/SectionPanel";
 import { SiteViewModel } from "../types/site";
+import { humanizeScopedName } from "../utils/display";
 
 interface WifiPageProps {
   site: SiteViewModel;
@@ -8,6 +9,7 @@ interface WifiPageProps {
 
 export function WifiPage({ site }: WifiPageProps) {
   const [exposeAllSsids, setExposeAllSsids] = useState(site.wifiExposeAllSsidsOnAllAps);
+  const displayNetworkName = (value: string) => humanizeScopedName(site.name, value);
 
   useEffect(() => {
     setExposeAllSsids(site.wifiExposeAllSsidsOnAllAps);
@@ -17,15 +19,15 @@ export function WifiPage({ site }: WifiPageProps) {
     <>
       <SectionPanel
         title="SSID intent"
-        subtitle="SSID and zone mapping from the canonical Wi-Fi model."
+        subtitle="SSID to network mapping from the canonical Wi-Fi model."
       >
         <h4 className="section-subheading">Virtual Lans (VLANS)</h4>
         <div className="summary-grid">
           {site.ssids.map((ssid) => (
             <article key={ssid.name} className="summary-card">
-              <span>{ssid.vlanLabel}</span>
+              <span>{displayNetworkName(ssid.network)}</span>
               <strong>{ssid.name}</strong>
-              <p>Zone: {ssid.zone}</p>
+              <p>Network: {displayNetworkName(ssid.network)}</p>
               <small>Groups: {ssid.groups.join(", ")}</small>
             </article>
           ))}

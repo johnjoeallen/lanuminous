@@ -41,11 +41,9 @@ export interface StagedArtifact {
 export interface NetworkCard {
   name: string;
   cidr: string;
-  zone: string;
   vlan: number | null;
-  vlanLabel: string | null;
   interface: string;
-  purpose: string;
+  description: string;
 }
 
 export interface InterfaceCard {
@@ -77,8 +75,7 @@ export interface PortForwardCard {
 export interface SsidCard {
   name: string;
   vlan: number;
-  vlanLabel: string;
-  zone: string;
+  network: string;
   groups: string[];
 }
 

@@ -1,6 +1,6 @@
 name: rivia-iot
 cidr: 10.0.20.0/24
-zone: rivia-iot
+description: Restricted network for smart home and embedded devices
 dns_domain: rivia-iot.lan
 vlan: 20
 parent_interface: enp3s0
@@ -8,4 +8,3 @@ dhcp:
   start: 10.0.20.100
   end: 10.0.20.199
   lease_time: 24h
-

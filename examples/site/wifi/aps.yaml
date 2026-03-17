@@ -8,12 +8,12 @@ aps:
       port: ge-0/0/10
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-iot
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap2
     management_ip: 10.0.10.3
     group: indoor
@@ -23,11 +23,11 @@ aps:
       port: ge-0/0/11
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap3
     management_ip: 10.0.10.4
     group: indoor
@@ -37,12 +37,12 @@ aps:
       port: ge-0/0/12
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-iot
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap4
     management_ip: 10.0.10.5
     group: indoor
@@ -52,11 +52,11 @@ aps:
       port: ge-0/0/13
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap5
     management_ip: 10.0.10.6
     group: indoor
@@ -66,12 +66,12 @@ aps:
       port: ge-0/0/14
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-iot
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap6
     management_ip: 10.0.10.7
     group: indoor
@@ -81,11 +81,11 @@ aps:
       port: ge-0/0/15
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap7
     management_ip: 10.0.10.8
     group: indoor
@@ -95,12 +95,12 @@ aps:
       port: ge-0/0/16
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-iot
       - rivia-guest
-      - labwifi
+      - rivia-lab
   - name: ap8
     management_ip: 10.0.10.9
     group: indoor
@@ -110,8 +110,8 @@ aps:
       port: ge-0/0/17
       native_vlan: 10
       tagged_vlans: [20, 30, 40]
-      expected_networks: [rivia-home, rivia-iot, rivia-guest, labwifi]
+      expected_networks: [rivia-home, rivia-iot, rivia-guest, rivia-lab]
     ssids:
       - rivia-home
       - rivia-guest
-      - labwifi
+      - rivia-lab

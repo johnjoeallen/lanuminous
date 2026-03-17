@@ -1,6 +1,6 @@
 name: rivia-guest
 cidr: 10.0.30.0/24
-zone: rivia-guest
+description: Internet-only network for guests
 dns_domain: rivia-guest.lan
 vlan: 30
 parent_interface: enp3s0
@@ -8,4 +8,3 @@ dhcp:
   start: 10.0.30.100
   end: 10.0.30.220
   lease_time: 4h
-

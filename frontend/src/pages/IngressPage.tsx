@@ -1,16 +1,19 @@
 import { SectionPanel } from "../components/SectionPanel";
 import { SiteViewModel } from "../types/site";
+import { humanizeScopedName } from "../utils/display";
 
 interface IngressPageProps {
   site: SiteViewModel;
 }
 
 export function IngressPage({ site }: IngressPageProps) {
+  const displayName = (value: string) => humanizeScopedName(site.name, value);
+
   return (
     <>
       <SectionPanel
-        title="Ingress summary"
-        subtitle="Everything that accepts traffic from outside and routes it to internal services."
+        title="Remote access summary"
+        subtitle="Ways people and devices can reach services on your network from outside."
       >
         <div className="summary-grid">
           <article className="summary-card">
@@ -30,7 +33,7 @@ export function IngressPage({ site }: IngressPageProps) {
 
       <SectionPanel
         title="Port forwarding"
-        subtitle="External-to-internal service exposure modeled independently from nftables syntax."
+        subtitle="Direct access from outside your network to a service inside it."
       >
         <div className="table-card">
           <table className="data-table">
@@ -48,7 +51,7 @@ export function IngressPage({ site }: IngressPageProps) {
               {site.portForwards.map((rule) => (
                 <tr key={rule.name}>
                   <td>{rule.name}</td>
-                  <td>{rule.sourceZone}</td>
+                  <td>{displayName(rule.sourceZone)}</td>
                   <td>{rule.protocol}</td>
                   <td>{rule.externalPort}</td>
                   <td>
@@ -63,8 +66,8 @@ export function IngressPage({ site }: IngressPageProps) {
       </SectionPanel>
 
       <SectionPanel
-        title={`Reverse proxies via ${site.reverseProxyProvider}`}
-        subtitle="Provider-selectable reverse proxy intent rendered into managed proxy configuration."
+        title={`Web access via ${site.reverseProxyProvider}`}
+        subtitle="Friendly web access that routes incoming requests to services inside your network."
       >
         <div className="summary-grid">
           {site.reverseProxies.map((proxy) => (

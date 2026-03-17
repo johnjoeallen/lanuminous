@@ -1,11 +1,14 @@
 import { SectionPanel } from "../components/SectionPanel";
 import { SiteViewModel } from "../types/site";
+import { humanizeScopedName } from "../utils/display";
 
 interface FirewallPageProps {
   site: SiteViewModel;
 }
 
 export function FirewallPage({ site }: FirewallPageProps) {
+  const displayName = (value: string) => humanizeScopedName(site.name, value);
+
   return (
     <>
       <SectionPanel
@@ -16,9 +19,9 @@ export function FirewallPage({ site }: FirewallPageProps) {
           {site.firewallPolicies.map((policy) => (
             <article key={policy.name} className="policy-card">
               <div className="policy-route">
-                <span>{policy.sourceZone}</span>
+                <span>{displayName(policy.sourceZone)}</span>
                 <strong>{policy.action}</strong>
-                <span>{policy.destinationZone}</span>
+                <span>{displayName(policy.destinationZone)}</span>
               </div>
               <h4>{policy.name}</h4>
               <p>{policy.summary}</p>

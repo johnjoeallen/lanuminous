@@ -11,8 +11,8 @@ zones:
   - name: rivia-guest
     networks: [rivia-guest]
     description: Guest-only internet access.
-  - name: labwifi
-    networks: [labwifi]
+  - name: rivia-lab
+    networks: [rivia-lab]
     description: Trusted Wi-Fi network for lab access.
   - name: wan
     description: Upstream internet zone.

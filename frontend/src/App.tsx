@@ -15,7 +15,7 @@ const sections: Array<{ id: AppSection; label: string }> = [
   { id: "overview", label: "Overview" },
   { id: "networks", label: "Networks" },
   { id: "firewall", label: "Firewall" },
-  { id: "ingress", label: "Ingress" },
+  { id: "ingress", label: "Remote Access" },
   { id: "wifi", label: "Wi-Fi" },
   { id: "artifacts", label: "Artifacts" },
   { id: "deployments", label: "Deployments" }

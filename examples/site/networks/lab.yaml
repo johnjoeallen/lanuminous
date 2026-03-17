@@ -1,9 +1,8 @@
 name: lab
 cidr: 10.0.0.0/24
-zone: lab
+description: Trusted network for infrastructure, servers, and administration
 dns_domain: lab.lan
 dhcp:
   start: 10.0.0.100
   end: 10.0.0.199
   lease_time: 12h
-

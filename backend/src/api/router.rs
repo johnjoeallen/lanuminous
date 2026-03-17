@@ -43,11 +43,9 @@ pub struct SiteApiView {
 pub struct NetworkCard {
     pub name: String,
     pub cidr: String,
-    pub zone: String,
     pub vlan: Option<u16>,
-    pub vlan_label: Option<String>,
     pub interface: String,
-    pub purpose: String,
+    pub description: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,8 +85,7 @@ pub struct PortForwardCard {
 pub struct SsidCard {
     pub name: String,
     pub vlan: u16,
-    pub vlan_label: String,
-    pub zone: String,
+    pub network: String,
     pub groups: Vec<String>,
 }
 
@@ -167,12 +164,17 @@ impl SiteApiView {
                             .iter()
                             .any(|name| name == &network.name)
                     })
-                    .map(|interface| interface.name.clone())
+                    .map(|interface| interface.logical_name.clone())
                     .or_else(|| {
                         network.vlan.as_ref().and_then(|vlan| {
                             vlan.parent_interface
                                 .as_ref()
-                                .map(|parent| format!("{parent}.{}", vlan.id))
+                                .and_then(|parent| {
+                                    site.interfaces
+                                        .iter()
+                                        .find(|interface| interface.name == *parent)
+                                        .map(|interface| interface.logical_name.clone())
+                                })
                         })
                     })
                     .unwrap_or_else(|| "unassigned".to_string());
@@ -180,14 +182,9 @@ impl SiteApiView {
                 NetworkCard {
                     name: network.name.clone(),
                     cidr: network.cidr.clone(),
-                    zone: network.zone.clone(),
                     vlan: network.vlan.as_ref().map(|vlan| vlan.id),
-                    vlan_label: network.vlan.as_ref().map(|_| network.name.clone()),
                     interface,
-                    purpose: network
-                        .dns_domain
-                        .clone()
-                        .unwrap_or_else(|| "Managed network".to_string()),
+                    description: network.description.clone(),
                 }
             })
             .collect();
@@ -198,7 +195,10 @@ impl SiteApiView {
             .map(|interface| InterfaceCard {
                 logical_name: interface.logical_name.clone(),
                 name: interface.name.clone(),
-                role: format!("{:?}", interface.role).to_lowercase(),
+                role: match interface.role {
+                    crate::domain::InterfaceRole::WifiUplink => "wifi".to_string(),
+                    _ => format!("{:?}", interface.role).to_lowercase(),
+                },
                 addresses: interface.addresses.clone(),
                 network_refs: interface.network_refs.clone(),
             })
@@ -245,8 +245,7 @@ impl SiteApiView {
             .map(|ssid| SsidCard {
                 name: ssid.name.clone(),
                 vlan: ssid.vlan,
-                vlan_label: ssid.name.clone(),
-                zone: ssid.zone.clone(),
+                network: ssid.zone.clone(),
                 groups: ssid.broadcast_groups.clone(),
             })
             .collect();
