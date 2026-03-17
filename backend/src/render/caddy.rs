@@ -36,7 +36,7 @@ impl Renderer for CaddyRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "reverse_proxy_main".to_string(),
-            target_path: "/etc/caddy/conf.d/lantricate-proxies.caddy".to_string(),
+            target_path: "/etc/caddy/conf.d/lanuminous-proxies.caddy".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

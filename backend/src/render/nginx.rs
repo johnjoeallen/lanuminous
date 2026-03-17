@@ -56,7 +56,7 @@ impl Renderer for NginxRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "reverse_proxy_main".to_string(),
-            target_path: "/etc/nginx/conf.d/lantricate-proxies.conf".to_string(),
+            target_path: "/etc/nginx/conf.d/lanuminous-proxies.conf".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

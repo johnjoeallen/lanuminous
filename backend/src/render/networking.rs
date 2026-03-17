@@ -33,7 +33,7 @@ impl Renderer for NetworkingRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "networking_main".to_string(),
-            target_path: "/etc/systemd/network/90-lantricate.network".to_string(),
+            target_path: "/etc/systemd/network/90-lanuminous.network".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

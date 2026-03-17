@@ -16,7 +16,7 @@ impl Renderer for NftablesRenderer {
     fn render(&self, site: &SiteConfig) -> Result<Vec<RenderedArtifact>> {
         let mut lines = vec![
             site.metadata.managed_prefix.clone(),
-            "table inet lantricate {".to_string(),
+            "table inet lanuminous {".to_string(),
             "  chain prerouting {".to_string(),
             "    type nat hook prerouting priority dstnat;".to_string(),
         ];
@@ -65,7 +65,7 @@ impl Renderer for NftablesRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "nftables_main".to_string(),
-            target_path: "/etc/nftables.d/lantricate.nft".to_string(),
+            target_path: "/etc/nftables.d/lanuminous.nft".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

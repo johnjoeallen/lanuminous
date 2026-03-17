@@ -39,7 +39,7 @@ impl Renderer for HaproxyRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "reverse_proxy_main".to_string(),
-            target_path: "/etc/haproxy/lantricate.cfg".to_string(),
+            target_path: "/etc/haproxy/lanuminous.cfg".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

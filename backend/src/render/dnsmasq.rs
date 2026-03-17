@@ -45,7 +45,7 @@ impl Renderer for DnsmasqRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "dnsmasq_main".to_string(),
-            target_path: "/etc/dnsmasq.d/lantricate.conf".to_string(),
+            target_path: "/etc/dnsmasq.d/lanuminous.conf".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

@@ -60,7 +60,7 @@ impl Renderer for Apache2Renderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "reverse_proxy_main".to_string(),
-            target_path: "/etc/apache2/sites-available/lantricate-proxies.conf".to_string(),
+            target_path: "/etc/apache2/sites-available/lanuminous-proxies.conf".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])

@@ -53,7 +53,7 @@ impl Renderer for TraefikRenderer {
         Ok(vec![RenderedArtifact {
             renderer: self.name().to_string(),
             logical_name: "reverse_proxy_main".to_string(),
-            target_path: "/etc/traefik/dynamic/lantricate.yml".to_string(),
+            target_path: "/etc/traefik/dynamic/lanuminous.yml".to_string(),
             checksum: sha256_string(&contents),
             contents,
         }])
