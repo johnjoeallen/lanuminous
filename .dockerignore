@@ -1,0 +1,9 @@
+.git
+.idea
+.lanuminous
+.lanuminous
+target
+frontend/node_modules
+frontend/dist
+frontend/.vite
+frontend/*.tsbuildinfo
