@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use lantricate::{app::SiteService, validate::IssueSeverity};
+use lanuminous::{app::SiteService, validate::IssueSeverity};
 
 fn example_site() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../examples/site")

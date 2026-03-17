@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use lantricate::config::load_site_from_path;
+use lanuminous::config::load_site_from_path;
 
 fn example_site() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../examples/site")
