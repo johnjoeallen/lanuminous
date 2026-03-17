@@ -256,11 +256,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             service_type: ServiceType::Networking,
             enabled: true,
             reload_command: Some("networkctl reload".to_string()),
-            managed_paths: vec![ManagedPath {
-                logical_name: "networking_main".to_string(),
-                path: "/etc/systemd/network/90-lanuminous.network".to_string(),
-                service: Some("systemd-networkd".to_string()),
-            }],
+            managed_paths: networking_managed_paths(&interfaces, &networks),
         },
         ServiceDef {
             name: "wifi-intent".to_string(),
@@ -365,4 +361,40 @@ fn reverse_proxy_service_definition(
             "/etc/haproxy/lanuminous.cfg".to_string(),
         ),
     }
+}
+
+fn networking_managed_paths(
+    interfaces: &[InterfaceDef],
+    networks: &[NetworkDef],
+) -> Vec<ManagedPath> {
+    let mut managed_paths = Vec::new();
+
+    for interface in interfaces {
+        managed_paths.push(ManagedPath {
+            logical_name: format!("networking_link_{}", interface.logical_name),
+            path: format!("/etc/systemd/network/10-{}.link", interface.logical_name),
+            service: Some("systemd-networkd".to_string()),
+        });
+        managed_paths.push(ManagedPath {
+            logical_name: format!("networking_main_{}", interface.logical_name),
+            path: format!("/etc/systemd/network/20-{}.network", interface.logical_name),
+            service: Some("systemd-networkd".to_string()),
+        });
+    }
+
+    for network in networks.iter().filter(|network| network.vlan.is_some()) {
+        managed_paths.push(ManagedPath {
+            logical_name: format!("networking_vlan_netdev_{}", network.name),
+            path: format!("/etc/systemd/network/30-{}.netdev", network.name),
+            service: Some("systemd-networkd".to_string()),
+        });
+        managed_paths.push(ManagedPath {
+            logical_name: format!("networking_vlan_network_{}", network.name),
+            path: format!("/etc/systemd/network/40-{}.network", network.name),
+            service: Some("systemd-networkd".to_string()),
+        });
+    }
+
+    managed_paths.sort_by(|left, right| left.logical_name.cmp(&right.logical_name));
+    managed_paths
 }

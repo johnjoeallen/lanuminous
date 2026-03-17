@@ -128,7 +128,7 @@ fn wan_interface_names(site: &SiteConfig) -> Vec<String> {
     site.interfaces
         .iter()
         .filter(|interface| interface.role == InterfaceRole::Wan)
-        .map(|interface| interface.name.clone())
+        .map(|interface| interface.logical_name.clone())
         .collect()
 }
 
@@ -169,13 +169,12 @@ fn network_interface_name(site: &SiteConfig, network_name: &str) -> Option<Strin
     {
         if let Some(network) = site.networks.iter().find(|network| network.name == network_name) {
             if let Some(vlan) = &network.vlan {
-                if let Some(parent) = &vlan.parent_interface {
-                    return Some(format!("{parent}.{}", vlan.id));
-                }
+                let _ = vlan;
+                return Some(network.name.clone());
             }
         }
 
-        return Some(interface.name.clone());
+        return Some(interface.logical_name.clone());
     }
 
     site.networks
@@ -183,9 +182,7 @@ fn network_interface_name(site: &SiteConfig, network_name: &str) -> Option<Strin
         .find(|network| network.name == network_name)
         .and_then(|network| {
             network.vlan.as_ref().and_then(|vlan| {
-                vlan.parent_interface
-                    .as_ref()
-                    .map(|parent| format!("{parent}.{}", vlan.id))
+                vlan.parent_interface.as_ref().map(|_| format!("network.{}", vlan.id))
             })
         })
 }
