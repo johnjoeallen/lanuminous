@@ -1,0 +1,10 @@
+name: labwifi
+cidr: 10.0.40.0/24
+description: Trusted Wi-Fi network for lab devices and administration
+dns_domain: labwifi.lan
+vlan: 40
+parent_interface: enp3s0
+dhcp:
+  start: 10.0.40.100
+  end: 10.0.40.199
+  lease_time: 8h

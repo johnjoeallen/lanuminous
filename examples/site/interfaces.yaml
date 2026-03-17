@@ -23,7 +23,9 @@ interfaces:
       - rivia-home
       - rivia-iot
       - rivia-guest
+      - labwifi
     vlan_tags:
       - 10
       - 20
       - 30
+      - 40

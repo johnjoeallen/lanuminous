@@ -5,6 +5,7 @@ groups:
       - rivia-home
       - rivia-iot
       - rivia-guest
+      - labwifi
     ap_names:
       - ap1
       - ap2
