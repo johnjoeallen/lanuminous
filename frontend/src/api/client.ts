@@ -15,3 +15,14 @@ export async function fetchSite() {
 
   return response.json();
 }
+
+export async function generateStaging() {
+  const response = await fetch("/api/staging/generate", {
+    method: "POST"
+  });
+  if (!response.ok) {
+    throw new Error(`Staging request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
