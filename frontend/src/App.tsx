@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateStaging } from "./api/client";
 import { AppShell } from "./components/AppShell";
 import { useSiteData } from "./hooks/useSiteData";
 import { ArtifactsPage } from "./pages/ArtifactsPage";
@@ -8,7 +9,7 @@ import { IngressPage } from "./pages/IngressPage";
 import { NetworksPage } from "./pages/NetworksPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { WifiPage } from "./pages/WifiPage";
-import { AppSection } from "./types/site";
+import { AppSection, StagingResult } from "./types/site";
 
 const sections: Array<{ id: AppSection; label: string }> = [
   { id: "overview", label: "Overview" },
@@ -23,6 +24,38 @@ const sections: Array<{ id: AppSection; label: string }> = [
 export default function App() {
   const [activeSection, setActiveSection] = useState<AppSection>("overview");
   const { site, source, loading, error } = useSiteData();
+  const [staging, setStaging] = useState<{
+    loading: boolean;
+    error: string | null;
+    result: StagingResult | null;
+  }>({
+    loading: false,
+    error: null,
+    result: null
+  });
+
+  async function handleGenerateStaging() {
+    setStaging({
+      loading: true,
+      error: null,
+      result: null
+    });
+
+    try {
+      const result = (await generateStaging()) as StagingResult;
+      setStaging({
+        loading: false,
+        error: null,
+        result
+      });
+    } catch (stageError) {
+      setStaging({
+        loading: false,
+        error: stageError instanceof Error ? stageError.message : "Failed to generate staging files",
+        result: null
+      });
+    }
+  }
 
   return (
     <AppShell
@@ -33,13 +66,15 @@ export default function App() {
       dataSource={source}
       loading={loading}
       error={error}
+      staging={staging}
+      onGenerateStaging={handleGenerateStaging}
     >
       {activeSection === "overview" && <OverviewPage site={site} />}
       {activeSection === "networks" && <NetworksPage site={site} />}
       {activeSection === "firewall" && <FirewallPage site={site} />}
       {activeSection === "ingress" && <IngressPage site={site} />}
       {activeSection === "wifi" && <WifiPage site={site} />}
-      {activeSection === "artifacts" && <ArtifactsPage site={site} />}
+      {activeSection === "artifacts" && <ArtifactsPage site={site} staging={staging} />}
       {activeSection === "deployments" && <DeploymentsPage site={site} />}
     </AppShell>
   );

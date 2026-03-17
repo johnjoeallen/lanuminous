@@ -1,5 +1,5 @@
 import { PropsWithChildren } from "react";
-import { AppSection, SiteViewModel } from "../types/site";
+import { AppSection, SiteViewModel, StagingResult } from "../types/site";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
@@ -11,6 +11,12 @@ interface AppShellProps extends PropsWithChildren {
   dataSource: "api" | "mock";
   loading: boolean;
   error: string | null;
+  staging: {
+    loading: boolean;
+    error: string | null;
+    result: StagingResult | null;
+  };
+  onGenerateStaging: () => void;
 }
 
 export function AppShell({
@@ -21,7 +27,9 @@ export function AppShell({
   site,
   dataSource,
   loading,
-  error
+  error,
+  staging,
+  onGenerateStaging
 }: AppShellProps) {
   return (
     <main className="app-shell">
@@ -35,7 +43,14 @@ export function AppShell({
           dataSource={dataSource}
         />
         <div className="app-main">
-          <TopBar site={site} dataSource={dataSource} loading={loading} error={error} />
+          <TopBar
+            site={site}
+            dataSource={dataSource}
+            loading={loading}
+            error={error}
+            staging={staging}
+            onGenerateStaging={onGenerateStaging}
+          />
           <div className="page-stack">{children}</div>
         </div>
       </div>
