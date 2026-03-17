@@ -64,7 +64,11 @@ impl Renderer for NetworkingRenderer {
             });
         }
 
-        for network in site.networks.iter().filter(|network| network.vlan.is_some()) {
+        for network in site
+            .networks
+            .iter()
+            .filter(|network| network.vlan.is_some())
+        {
             let netdev_contents = vec![
                 site.metadata.managed_prefix.clone(),
                 "[NetDev]".to_string(),

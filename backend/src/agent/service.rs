@@ -107,8 +107,9 @@ impl HostAgentService {
                 .unwrap_or(&full_path)
                 .display()
                 .to_string();
-            let bytes = fs::read(&full_path)
-                .with_context(|| format!("failed to read staged artifact {}", full_path.display()))?;
+            let bytes = fs::read(&full_path).with_context(|| {
+                format!("failed to read staged artifact {}", full_path.display())
+            })?;
             artifacts.push(StageInspectionArtifact {
                 relative_path,
                 full_path: full_path.display().to_string(),

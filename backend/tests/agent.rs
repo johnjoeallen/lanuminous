@@ -13,8 +13,11 @@ fn agent_inspects_staged_files() {
     fs::create_dir_all(&nested_dir).expect("nested stage directory should be created");
     fs::write(stage_dir.path().join("dnsmasq_main.conf"), "port=53\n")
         .expect("dnsmasq artifact should be written");
-    fs::write(nested_dir.join("nftables_main.nft"), "table inet lanuminous {}\n")
-        .expect("nftables artifact should be written");
+    fs::write(
+        nested_dir.join("nftables_main.nft"),
+        "table inet lanuminous {}\n",
+    )
+    .expect("nftables artifact should be written");
 
     let inspection = HostAgentService
         .inspect_stage_dir(stage_dir.path())
@@ -28,5 +31,8 @@ fn agent_inspects_staged_files() {
     assert!(inspection
         .artifacts
         .iter()
-        .any(|artifact| artifact.relative_path == PathBuf::from("nested/nftables_main.nft").display().to_string()));
+        .any(|artifact| artifact.relative_path
+            == PathBuf::from("nested/nftables_main.nft")
+                .display()
+                .to_string()));
 }
