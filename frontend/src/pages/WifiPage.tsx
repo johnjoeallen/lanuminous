@@ -17,16 +17,15 @@ export function WifiPage({ site }: WifiPageProps) {
     <>
       <SectionPanel
         title="SSID intent"
-        subtitle="SSID to VLAN and zone mapping from the canonical Wi-Fi model."
+        subtitle="SSID and zone mapping from the canonical Wi-Fi model."
       >
+        <h4 className="section-subheading">Virtual Lans (VLANS)</h4>
         <div className="summary-grid">
           {site.ssids.map((ssid) => (
             <article key={ssid.name} className="summary-card">
               <span>{ssid.vlanLabel}</span>
               <strong>{ssid.name}</strong>
-              <p>
-                Zone: {ssid.zone} | Internal tag: {ssid.vlan}
-              </p>
+              <p>Zone: {ssid.zone}</p>
               <small>Groups: {ssid.groups.join(", ")}</small>
             </article>
           ))}
@@ -34,17 +33,32 @@ export function WifiPage({ site }: WifiPageProps) {
       </SectionPanel>
 
       <SectionPanel
-        title="Access point inventory"
+        title="Access points (APs)"
         subtitle="Intended AP state even before vendor/controller integration exists."
         headerAction={
-          <label className="toggle-field">
-            <input
-              type="checkbox"
-              checked={exposeAllSsids}
-              onChange={(event) => setExposeAllSsids(event.target.checked)}
-            />
-            <span>Expose all SSIDs on all APs</span>
-          </label>
+          <div className="toggle-with-help">
+            <label className="toggle-field">
+              <input
+                type="checkbox"
+                checked={exposeAllSsids}
+                onChange={(event) => setExposeAllSsids(event.target.checked)}
+              />
+              <span>Unify SSIDs</span>
+            </label>
+            <div className="help-popover">
+              <button
+                type="button"
+                className="help-button"
+                aria-label="Explain Unify SSIDs"
+              >
+                ?
+              </button>
+              <div className="help-popover-card" role="note">
+                Show the same Wi-Fi networks on every access point instead of assigning
+                different networks to different rooms or devices.
+              </div>
+            </div>
+          </div>
         }
       >
         <div className="summary-grid">

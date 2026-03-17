@@ -1,12 +1,23 @@
-use axum::{extract::State, routing::get, Json, Router};
+use std::path::{Path, PathBuf};
+
+use axum::{
+    extract::State,
+    routing::{get, get_service, post},
+    Json, Router,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use tower_http::services::{ServeDir, ServeFile};
 
-use crate::domain::SiteConfig;
+use crate::{
+    app::{SiteService, StagedArtifactResult},
+    domain::SiteConfig,
+};
 
 #[derive(Debug, Clone)]
 pub struct ApiState {
     pub site: SiteConfig,
+    pub stage_root: PathBuf,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,6 +53,7 @@ pub struct NetworkCard {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterfaceCard {
+    pub logical_name: String,
     pub name: String,
     pub role: String,
     pub addresses: Vec<String>,
@@ -121,6 +133,25 @@ pub struct DeploymentCard {
     pub summary: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StageGenerationView {
+    pub stage_dir: String,
+    pub generated_at: String,
+    pub artifact_count: usize,
+    pub artifacts: Vec<StagedArtifactView>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StagedArtifactView {
+    pub logical_name: String,
+    pub stage_path: String,
+    pub target_path: String,
+    pub checksum: String,
+    pub contents: String,
+}
+
 impl SiteApiView {
     pub fn from_site(site: &SiteConfig) -> Self {
         let networks = site
@@ -165,6 +196,7 @@ impl SiteApiView {
             .interfaces
             .iter()
             .map(|interface| InterfaceCard {
+                logical_name: interface.logical_name.clone(),
                 name: interface.name.clone(),
                 role: format!("{:?}", interface.role).to_lowercase(),
                 addresses: interface.addresses.clone(),
@@ -270,7 +302,7 @@ impl SiteApiView {
                 .metadata
                 .description
                 .clone()
-                .unwrap_or_else(|| "Lantricate managed site".to_string()),
+                .unwrap_or_else(|| "Lanuminous managed site".to_string()),
             reverse_proxy_provider: format!("{:?}", site.reverse_proxies.provider).to_lowercase(),
             wifi_expose_all_ssids_on_all_aps: site.wifi.expose_all_ssids_on_all_aps,
             networks,
@@ -291,20 +323,63 @@ impl SiteApiView {
     }
 }
 
-pub fn build_router(site: SiteConfig) -> Router {
-    Router::new()
+pub fn build_router(site: SiteConfig, stage_root: PathBuf, ui_dir: Option<PathBuf>) -> Router {
+    let router = Router::new()
         .route("/healthz", get(healthz))
         .route("/api/site", get(site_summary))
-        .with_state(ApiState { site })
+        .route("/api/staging/generate", post(generate_staging))
+        .with_state(ApiState { site, stage_root });
+
+    if let Some(ui_dir) = ui_dir.filter(|path| path.exists()) {
+        router.fallback_service(spa_service(&ui_dir))
+    } else {
+        router
+    }
 }
 
 async fn healthz() -> Json<Value> {
     Json(json!({
         "status": "ok",
-        "service": "lantricate-api",
+        "service": "lanuminous-api",
     }))
 }
 
 async fn site_summary(State(state): State<ApiState>) -> Json<SiteApiView> {
     Json(SiteApiView::from_site(&state.site))
+}
+
+async fn generate_staging(State(state): State<ApiState>) -> Json<StageGenerationView> {
+    let service = SiteService;
+    let result = service
+        .stage_site(&state.site, &state.stage_root)
+        .expect("staging generation should succeed");
+
+    Json(StageGenerationView {
+        stage_dir: result.stage_dir.display().to_string(),
+        generated_at: result.generated_at.to_rfc3339(),
+        artifact_count: result.artifacts.len(),
+        artifacts: result
+            .artifacts
+            .into_iter()
+            .map(|artifact| map_staged_artifact(artifact))
+            .collect(),
+    })
+}
+
+fn map_staged_artifact(artifact: StagedArtifactResult) -> StagedArtifactView {
+    StagedArtifactView {
+        logical_name: artifact.logical_name,
+        stage_path: artifact.stage_path,
+        target_path: artifact.target_path,
+        checksum: artifact.checksum,
+        contents: artifact.contents,
+    }
+}
+
+fn spa_service(ui_dir: &Path) -> axum::routing::MethodRouter {
+    get_service(
+        ServeDir::new(ui_dir)
+            .append_index_html_on_directories(true)
+            .not_found_service(ServeFile::new(ui_dir.join("index.html"))),
+    )
 }

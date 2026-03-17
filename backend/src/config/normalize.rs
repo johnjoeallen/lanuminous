@@ -17,7 +17,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             .site
             .metadata
             .managed_prefix
-            .unwrap_or_else(|| "# Managed by Lantricate".to_string()),
+            .unwrap_or_else(|| "# Managed by Lanuminous".to_string()),
     };
 
     let interfaces = bundle
@@ -25,6 +25,9 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         .interfaces
         .into_iter()
         .map(|interface| InterfaceDef {
+            logical_name: interface
+                .logical_name
+                .unwrap_or_else(|| format!("{:?}", interface.role).to_lowercase()),
             name: interface.name,
             role: interface.role,
             kind: interface.kind,
@@ -244,7 +247,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             reload_command: Some("systemctl reload dnsmasq".to_string()),
             managed_paths: vec![ManagedPath {
                 logical_name: "dnsmasq_main".to_string(),
-                path: "/etc/dnsmasq.d/lantricate.conf".to_string(),
+                path: "/etc/dnsmasq.d/lanuminous.conf".to_string(),
                 service: Some("dnsmasq".to_string()),
             }],
         },
@@ -255,7 +258,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             reload_command: Some("networkctl reload".to_string()),
             managed_paths: vec![ManagedPath {
                 logical_name: "networking_main".to_string(),
-                path: "/etc/systemd/network/90-lantricate.network".to_string(),
+                path: "/etc/systemd/network/90-lanuminous.network".to_string(),
                 service: Some("systemd-networkd".to_string()),
             }],
         },
@@ -266,7 +269,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             reload_command: None,
             managed_paths: vec![ManagedPath {
                 logical_name: "wifi_summary".to_string(),
-                path: "/var/lib/lantricate/generated/wifi-summary.txt".to_string(),
+                path: "/var/lib/lanuminous/generated/wifi-summary.txt".to_string(),
                 service: None,
             }],
         },
@@ -290,7 +293,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
             .or_else(|| Some("systemctl reload nftables".to_string())),
         managed_paths: vec![ManagedPath {
             logical_name: "nftables_main".to_string(),
-            path: "/etc/nftables.d/lantricate.nft".to_string(),
+            path: "/etc/nftables.d/lanuminous.nft".to_string(),
             service: Some("nftables".to_string()),
         }],
     });
@@ -335,31 +338,31 @@ fn reverse_proxy_service_definition(
             "apache2".to_string(),
             ServiceType::Apache2,
             "systemctl reload apache2".to_string(),
-            "/etc/apache2/sites-available/lantricate-proxies.conf".to_string(),
+            "/etc/apache2/sites-available/lanuminous-proxies.conf".to_string(),
         ),
         ReverseProxyProvider::Nginx => (
             "nginx".to_string(),
             ServiceType::Nginx,
             "systemctl reload nginx".to_string(),
-            "/etc/nginx/conf.d/lantricate-proxies.conf".to_string(),
+            "/etc/nginx/conf.d/lanuminous-proxies.conf".to_string(),
         ),
         ReverseProxyProvider::Caddy => (
             "caddy".to_string(),
             ServiceType::Caddy,
             "systemctl reload caddy".to_string(),
-            "/etc/caddy/conf.d/lantricate-proxies.caddy".to_string(),
+            "/etc/caddy/conf.d/lanuminous-proxies.caddy".to_string(),
         ),
         ReverseProxyProvider::Traefik => (
             "traefik".to_string(),
             ServiceType::Traefik,
             "systemctl reload traefik".to_string(),
-            "/etc/traefik/dynamic/lantricate.yml".to_string(),
+            "/etc/traefik/dynamic/lanuminous.yml".to_string(),
         ),
         ReverseProxyProvider::Haproxy => (
             "haproxy".to_string(),
             ServiceType::Haproxy,
             "systemctl reload haproxy".to_string(),
-            "/etc/haproxy/lantricate.cfg".to_string(),
+            "/etc/haproxy/lanuminous.cfg".to_string(),
         ),
     }
 }

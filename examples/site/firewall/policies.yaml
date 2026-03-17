@@ -14,7 +14,7 @@ policies:
   - name: rivia-iot-jellyfin
     action: accept
     source_zone: rivia-iot
-    destination_zone: lab
+    destination_zone: rivia-home
     allowed_services: [http, https]
     destination_hosts: [jellyfin]
     description: IoT devices may reach Jellyfin only.

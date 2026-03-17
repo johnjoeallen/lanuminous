@@ -1,0 +1,13 @@
+services:
+  controller:
+    build:
+      context: .
+    image: lanuminous-controller:latest
+    ports:
+      - "9097:9097"
+    volumes:
+      - ${LANUMINOUS_CONFIG_DIR:-./examples/site}:/config:ro
+      - lanuminous-state:/var/lib/lanuminous
+
+volumes:
+  lanuminous-state:

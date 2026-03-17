@@ -1,10 +1,9 @@
-domain: lan
+domain: rivia.home
 upstream_servers:
   - 1.1.1.1
   - 9.9.9.9
 static_records:
-  - name: jellyfin.lan
-    address: 10.0.0.20
-  - name: gateway.lan
+  - name: jellyfin.rivia.home
+    address: 10.0.10.20
+  - name: gateway.rivia.home
     address: 10.0.0.1
-

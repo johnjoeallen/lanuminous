@@ -16,11 +16,10 @@ export function OverviewPage({ site }: OverviewPageProps) {
     <>
       <section className="hero-panel">
         <p className="eyebrow">Overview</p>
-        <h2>One canonical model, multiple managed network outputs.</h2>
+        <h2>Manage your home network from one place.</h2>
         <p className="hero-copy">
-          Lantricate treats generated files as derived artifacts. The product flow is
-          load, normalize, validate, render, stage, compare, back up, apply, and
-          eventually roll back from manifest history.
+          Lanuminous helps you set up and manage your gateway, Wi-Fi, and network
+          rules without editing system files by hand.
         </p>
         <div className="hero-grid">
           {highlights.map((item) => (
@@ -48,12 +47,6 @@ export function OverviewPage({ site }: OverviewPageProps) {
           <article className="summary-card">
             <span>Apply posture</span>
             <strong>Render and plan today, deploy pipeline next</strong>
-          </article>
-          <article className="summary-card">
-            <span>Ingress intent</span>
-            <strong>
-              {site.portForwards.length} forwards and {site.reverseProxies.length} Apache proxies
-            </strong>
           </article>
         </div>
       </SectionPanel>

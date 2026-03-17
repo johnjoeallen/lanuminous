@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct InterfaceDef {
+    pub logical_name: String,
     pub name: String,
     pub role: InterfaceRole,
     pub kind: InterfaceKind,

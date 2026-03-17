@@ -9,6 +9,26 @@ export function IngressPage({ site }: IngressPageProps) {
   return (
     <>
       <SectionPanel
+        title="Ingress summary"
+        subtitle="Everything that accepts traffic from outside and routes it to internal services."
+      >
+        <div className="summary-grid">
+          <article className="summary-card">
+            <span>Port forwards</span>
+            <strong>{site.portForwards.length}</strong>
+          </article>
+          <article className="summary-card">
+            <span>Reverse proxies</span>
+            <strong>{site.reverseProxies.length}</strong>
+          </article>
+          <article className="summary-card">
+            <span>Proxy provider</span>
+            <strong>{site.reverseProxyProvider}</strong>
+          </article>
+        </div>
+      </SectionPanel>
+
+      <SectionPanel
         title="Port forwarding"
         subtitle="External-to-internal service exposure modeled independently from nftables syntax."
       >

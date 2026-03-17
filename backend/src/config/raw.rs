@@ -23,6 +23,7 @@ pub struct InterfacesFile {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct RawInterface {
+    pub logical_name: Option<String>,
     pub name: String,
     pub role: InterfaceRole,
     pub kind: InterfaceKind,

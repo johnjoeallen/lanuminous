@@ -23,6 +23,21 @@ export interface SiteViewModel {
   deployments: DeploymentCard[];
 }
 
+export interface StagingResult {
+  stageDir: string;
+  generatedAt: string;
+  artifactCount: number;
+  artifacts: StagedArtifact[];
+}
+
+export interface StagedArtifact {
+  logicalName: string;
+  stagePath: string;
+  targetPath: string;
+  checksum: string;
+  contents: string;
+}
+
 export interface NetworkCard {
   name: string;
   cidr: string;
@@ -34,6 +49,7 @@ export interface NetworkCard {
 }
 
 export interface InterfaceCard {
+  logicalName: string;
   name: string;
   role: string;
   addresses: string[];
@@ -89,7 +105,7 @@ export interface ArtifactCard {
   logicalName: string;
   targetPath: string;
   renderer: string;
-  changeState: "changed" | "unchanged" | "planned";
+  changeState: "planned" | "staged" | "synced";
 }
 
 export interface DeploymentCard {

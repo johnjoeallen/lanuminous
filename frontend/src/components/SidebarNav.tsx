@@ -18,10 +18,9 @@ export function SidebarNav({
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <p className="sidebar-kicker">Lantricate</p>
-        <h1>{site.name}</h1>
+        <p className="sidebar-kicker">Lanuminous</p>
         <p className="sidebar-copy">
-          Canonical network intent for a managed home-lab gateway and Wi-Fi edge.
+          Simple, centralized management for secure networks.
         </p>
       </div>
 

@@ -1,8 +1,8 @@
 import { SiteViewModel } from "../types/site";
 
 export const mockSite: SiteViewModel = {
-  name: "Lantricate Demo Site",
-  description: "Intent model for a Linux gateway, segmented Wi-Fi, and staged artifact generation.",
+  name: "Rivia",
+  description: "Managed gateway and Wi-Fi design for a segmented home or small office network.",
   reverseProxyProvider: "nginx",
   wifiExposeAllSsidsOnAllAps: true,
   networks: [
@@ -44,9 +44,10 @@ export const mockSite: SiteViewModel = {
     }
   ],
   interfaces: [
-    { name: "enp1s0", role: "wan", addresses: ["dhcp"], networkRefs: [] },
-    { name: "enp2s0", role: "lan", addresses: ["10.0.0.1/24"], networkRefs: ["lab"] },
+    { logicalName: "wan", name: "enp1s0", role: "wan", addresses: ["dhcp"], networkRefs: [] },
+    { logicalName: "lan", name: "enp2s0", role: "lan", addresses: ["10.0.0.1/24"], networkRefs: ["lab"] },
     {
+      logicalName: "wifi",
       name: "enp3s0",
       role: "wifi_uplink",
       addresses: ["10.0.10.1/24"],
@@ -71,7 +72,7 @@ export const mockSite: SiteViewModel = {
     {
       name: "rivia-iot-jellyfin",
       sourceZone: "rivia-iot",
-      destinationZone: "lab",
+      destinationZone: "rivia-home",
       action: "accept",
       summary: "IoT devices can reach Jellyfin only."
     },
@@ -168,7 +169,7 @@ export const mockSite: SiteViewModel = {
     {
       name: "jellyfin-proxy",
       provider: "nginx",
-      serverNames: ["jellyfin.example.lan", "media.example.lan"],
+      serverNames: ["jellyfin.rivia.home", "media.rivia.home"],
       listenPort: 443,
       backendHost: "jellyfin",
       backendPort: 8096,
@@ -179,27 +180,27 @@ export const mockSite: SiteViewModel = {
   artifacts: [
     {
       logicalName: "reverse_proxy_main",
-      targetPath: "/etc/nginx/conf.d/lantricate-proxies.conf",
+      targetPath: "/etc/nginx/conf.d/lanuminous-proxies.conf",
       renderer: "nginx",
-      changeState: "changed"
+      changeState: "planned"
     },
     {
       logicalName: "dnsmasq_main",
-      targetPath: "/etc/dnsmasq.d/lantricate.conf",
+      targetPath: "/etc/dnsmasq.d/lanuminous.conf",
       renderer: "dnsmasq",
-      changeState: "changed"
+      changeState: "planned"
     },
     {
       logicalName: "nftables_main",
-      targetPath: "/etc/nftables.d/lantricate.nft",
+      targetPath: "/etc/nftables.d/lanuminous.nft",
       renderer: "nftables",
-      changeState: "changed"
+      changeState: "planned"
     },
     {
       logicalName: "networking_main",
-      targetPath: "/etc/systemd/network/90-lantricate.network",
+      targetPath: "/etc/systemd/network/90-lanuminous.network",
       renderer: "networking",
-      changeState: "changed"
+      changeState: "synced"
     }
   ],
   deployments: [
