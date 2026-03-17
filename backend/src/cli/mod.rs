@@ -43,6 +43,10 @@ enum Commands {
         #[command(subcommand)]
         command: AgentCommands,
     },
+    RemoteAccess {
+        #[command(subcommand)]
+        command: RemoteAccessCommands,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -54,6 +58,28 @@ enum AgentCommands {
     InspectStage {
         #[arg(long)]
         stage_dir: PathBuf,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum RemoteAccessCommands {
+    Validate {
+        #[arg(long, default_value = "examples/site")]
+        config: PathBuf,
+        #[arg(long)]
+        json: bool,
+    },
+    Plan {
+        #[arg(long, default_value = "examples/site")]
+        config: PathBuf,
+        #[arg(long)]
+        json: bool,
+    },
+    Status {
+        #[arg(long, default_value = "examples/site")]
+        config: PathBuf,
+        #[arg(long)]
+        json: bool,
     },
 }
 
@@ -132,6 +158,75 @@ impl Cli {
                 AgentCommands::InspectStage { stage_dir } => {
                     let inspection = agent_service.inspect_stage_dir(stage_dir)?;
                     println!("{}", serde_json::to_string_pretty(&inspection)?);
+                }
+            },
+            Commands::RemoteAccess { command } => match command {
+                RemoteAccessCommands::Validate { config, json } => {
+                    let site = service.load_site(config)?;
+                    let report = service.validate_site(&site);
+                    let remote_issues = report
+                        .issues
+                        .iter()
+                        .filter(|issue| issue.path.starts_with("remote_access."))
+                        .cloned()
+                        .collect::<Vec<_>>();
+
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&remote_issues)?);
+                    } else if remote_issues.is_empty() {
+                        println!("remote access validation: ok");
+                    } else {
+                        for issue in &remote_issues {
+                            println!("[{:?}] {}: {}", issue.severity, issue.path, issue.message);
+                        }
+                    }
+
+                    if remote_issues.iter().any(|issue| {
+                        matches!(issue.severity, crate::validate::IssueSeverity::Error)
+                    }) {
+                        bail!("remote access validation failed");
+                    }
+                }
+                RemoteAccessCommands::Plan { config, json } => {
+                    let site = service.load_site(config)?;
+                    let report = service.validate_site(&site);
+                    if !report.is_valid() {
+                        bail!("cannot plan remote access for invalid config");
+                    }
+
+                    let plan = service
+                        .plan_remote_access(&site)
+                        .map_err(|err| anyhow::anyhow!(err.to_string()))?;
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&plan)?);
+                    } else {
+                        println!("planned publications: {}", plan.publications.len());
+                        println!("planned DNS records: {}", plan.dns_records.len());
+                        println!("planned WAN syncs: {}", plan.wan_updates.len());
+                    }
+                }
+                RemoteAccessCommands::Status { config, json } => {
+                    let site = service.load_site(config)?;
+                    let report = service.validate_site(&site);
+                    if !report.is_valid() {
+                        bail!("cannot inspect remote access status for invalid config");
+                    }
+
+                    let status = service
+                        .remote_access_status(&site)
+                        .map_err(|err| anyhow::anyhow!(err.to_string()))?;
+                    if json {
+                        println!("{}", serde_json::to_string_pretty(&status)?);
+                    } else if status.is_empty() {
+                        println!("remote access status: no configured publications");
+                    } else {
+                        for entry in &status {
+                            println!(
+                                "[{:?}] {} {}: {}",
+                                entry.status, entry.provider, entry.action, entry.message
+                            );
+                        }
+                    }
                 }
             },
         }

@@ -5,6 +5,7 @@ pub mod cli;
 pub mod config;
 pub mod deploy;
 pub mod domain;
+pub mod remote_access;
 pub mod render;
 pub mod util;
 pub mod validate;

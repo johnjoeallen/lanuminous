@@ -8,8 +8,8 @@ use walkdir::WalkDir;
 
 use crate::config::raw::{
     InterfacesFile, RawApsFile, RawDhcpFile, RawDnsFile, RawGroupsFile, RawHostFile,
-    RawNetworkFile, RawPoliciesFile, RawPortForwardsFile, RawReverseProxyFile, RawServiceFile,
-    RawSsidsFile, RawZonesFile, SiteFile,
+    RawNetworkFile, RawPoliciesFile, RawPortForwardsFile, RawRemoteAccessFile, RawReverseProxyFile,
+    RawServiceFile, RawSsidsFile, RawZonesFile, SiteFile,
 };
 
 #[derive(Debug, Clone)]
@@ -28,6 +28,7 @@ pub struct ConfigBundle {
     pub nftables_service: Option<RawServiceFile>,
     pub port_forwards: RawPortForwardsFile,
     pub reverse_proxy: RawReverseProxyFile,
+    pub remote_access: RawRemoteAccessFile,
 }
 
 #[derive(Debug, Error)]
@@ -73,6 +74,9 @@ pub fn load_site_from_path(root: impl AsRef<Path>) -> Result<ConfigBundle, Confi
                     .flatten()
             })
             .unwrap_or_default();
+    let remote_access =
+        read_optional_yaml::<RawRemoteAccessFile>(&root.join("services/remote-access.yaml"))?
+            .unwrap_or_default();
 
     let nftables_path = root.join("services/nftables.yaml");
     let nftables_service = if nftables_path.exists() {
@@ -96,6 +100,7 @@ pub fn load_site_from_path(root: impl AsRef<Path>) -> Result<ConfigBundle, Confi
         nftables_service,
         port_forwards,
         reverse_proxy,
+        remote_access,
     })
 }
 

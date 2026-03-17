@@ -2,10 +2,13 @@ use crate::{
     config::ConfigBundle,
     domain::{
         AccessPointDef, AccessPointGroupDef, ApBackend, DhcpConfig, DhcpPool, DnsConfig, DnsRecord,
-        FirewallConfig, HostDef, HostInterfaceDef, InterfaceDef, ManagedPath, Metadata, NetworkDef,
-        PolicyRule, PortForwardConfig, PortForwardRule, ProxyBackend, ReservationDef,
+        DynamicDnsProviderDef, ExposureMode, FirewallConfig, HostDef, HostInterfaceDef,
+        InterfaceDef, ManagedPath, ManagedSubdomainProviderDef, ManualProviderDef, Metadata,
+        NetworkDef, PolicyRule, PortForwardConfig, PortForwardRule, ProxyBackend,
+        PublicationAudience, PublicationProtocol, PublicationRule, PublicationTarget,
+        RemoteAccessConfig, RemoteDnsProviderDef, RemoteDnsProviderKind, ReservationDef,
         ReverseProxyConfig, ReverseProxyProvider, ReverseProxySite, RouteDef, ServiceDef,
-        ServiceType, SiteConfig, UplinkDef, VlanDef, WifiConfig, ZoneDef,
+        ServiceType, SiteConfig, UplinkDef, VlanDef, WanAddressUpdate, WifiConfig, ZoneDef,
     },
 };
 
@@ -314,6 +317,72 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         });
     }
 
+    let remote_access = RemoteAccessConfig {
+        providers: bundle
+            .remote_access
+            .providers
+            .into_iter()
+            .map(|provider| RemoteDnsProviderDef {
+                id: provider.id,
+                credential_ref: provider.credential_ref,
+                provider: match provider.provider_type {
+                    crate::config::raw::RawRemoteProviderType::ManagedSubdomain => {
+                        RemoteDnsProviderKind::ManagedSubdomain(ManagedSubdomainProviderDef {
+                            zone: provider.zone.unwrap_or_default(),
+                        })
+                    }
+                    crate::config::raw::RawRemoteProviderType::JokerDynDns => {
+                        RemoteDnsProviderKind::JokerDynDns(DynamicDnsProviderDef {
+                            hostname: provider.hostname.unwrap_or_default(),
+                            service: provider.service,
+                            update_url: provider.update_url,
+                        })
+                    }
+                    crate::config::raw::RawRemoteProviderType::GenericDynDns => {
+                        RemoteDnsProviderKind::GenericDynDns(DynamicDnsProviderDef {
+                            hostname: provider.hostname.unwrap_or_default(),
+                            service: provider.service,
+                            update_url: provider.update_url,
+                        })
+                    }
+                    crate::config::raw::RawRemoteProviderType::Manual => {
+                        RemoteDnsProviderKind::Manual(ManualProviderDef {
+                            base_domain: provider.base_domain,
+                            note: provider.note,
+                        })
+                    }
+                },
+            })
+            .collect(),
+        publications: bundle
+            .remote_access
+            .services
+            .into_iter()
+            .map(|rule| PublicationRule {
+                target: PublicationTarget::Service(rule.service),
+                enabled: rule.enabled,
+                provider: rule.provider,
+                publish_as: rule.publish_as,
+                protocol: rule.protocol.unwrap_or(PublicationProtocol::Https),
+                target_port: rule.port.unwrap_or_default(),
+                audience: rule.audience.unwrap_or(PublicationAudience::Private),
+                exposure_mode: rule.exposure_mode.unwrap_or(ExposureMode::Direct),
+            })
+            .collect(),
+        wan_updates: bundle
+            .remote_access
+            .wan_updates
+            .into_iter()
+            .map(|update| WanAddressUpdate {
+                name: update.name,
+                enabled: update.enabled,
+                provider: update.provider.unwrap_or_default(),
+                hostname: update.hostname.unwrap_or_default(),
+                audience: update.audience.unwrap_or(PublicationAudience::AdminOnly),
+            })
+            .collect(),
+    };
+
     SiteConfig {
         metadata,
         interfaces,
@@ -324,6 +393,7 @@ pub fn normalize_bundle(bundle: ConfigBundle) -> SiteConfig {
         dhcp: Some(dhcp),
         port_forwards,
         reverse_proxies,
+        remote_access,
         firewall,
         wifi,
         switches: Vec::new(),

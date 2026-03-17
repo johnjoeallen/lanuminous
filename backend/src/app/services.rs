@@ -9,7 +9,8 @@ use uuid::Uuid;
 
 use crate::{
     config::{load_site_from_path, normalize_bundle},
-    domain::{RenderedArtifact, SiteConfig},
+    domain::{PublicationPlan, PublicationResult, RenderedArtifact, SiteConfig},
+    remote_access::{plan_remote_access, remote_access_status, RemoteAccessError},
     render::render_all,
     validate::{run_validation, ValidationReport},
 };
@@ -47,6 +48,20 @@ impl SiteService {
         render_all(site)
     }
 
+    pub fn plan_remote_access(
+        &self,
+        site: &SiteConfig,
+    ) -> Result<PublicationPlan, RemoteAccessError> {
+        plan_remote_access(site)
+    }
+
+    pub fn remote_access_status(
+        &self,
+        site: &SiteConfig,
+    ) -> Result<Vec<PublicationResult>, RemoteAccessError> {
+        remote_access_status(site)
+    }
+
     pub fn stage_site(
         &self,
         site: &SiteConfig,
@@ -54,9 +69,11 @@ impl SiteService {
     ) -> Result<StagingResult> {
         let artifacts = self.render_site(site)?;
         let generated_at = Utc::now();
-        let stage_dir = stage_root
-            .as_ref()
-            .join(format!("{}-{}", generated_at.format("%Y%m%dT%H%M%SZ"), Uuid::new_v4()));
+        let stage_dir = stage_root.as_ref().join(format!(
+            "{}-{}",
+            generated_at.format("%Y%m%dT%H%M%SZ"),
+            Uuid::new_v4()
+        ));
         fs::create_dir_all(&stage_dir)?;
 
         let mut staged_artifacts = Vec::new();

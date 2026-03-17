@@ -191,6 +191,53 @@ export const mockSite: SiteViewModel = {
       tlsMode: "terminate_at_proxy"
     }
   ],
+  remoteAccess: {
+    providers: [
+      {
+        id: "lanuminous",
+        kind: "managed_subdomain",
+        credentialRef: null
+      },
+      {
+        id: "joker",
+        kind: "joker_dyndns",
+        credentialRef: "joker-ddns"
+      }
+    ],
+    publications: [
+      {
+        service: "jellyfin",
+        enabled: true,
+        provider: "lanuminous",
+        externalName: "jellyfin.rivia-demo.lanuminous.net",
+        protocol: "https",
+        targetPort: 8096,
+        audience: "family",
+        exposureMode: "direct",
+        targetAddress: "10.0.10.20"
+      },
+      {
+        service: "gateway",
+        enabled: false,
+        provider: "joker",
+        externalName: null,
+        protocol: "udp",
+        targetPort: 51820,
+        audience: "admin_only",
+        exposureMode: "direct",
+        targetAddress: null
+      }
+    ],
+    wanUpdates: [
+      {
+        name: "gateway-vpn-ddns",
+        enabled: true,
+        provider: "joker",
+        hostname: "vpn.rivia.example.net",
+        audience: "admin_only"
+      }
+    ]
+  },
   artifacts: [
     {
       logicalName: "reverse_proxy_main",

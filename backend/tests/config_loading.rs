@@ -12,4 +12,7 @@ fn loads_example_site_bundle() {
     assert_eq!(bundle.networks.len(), 5);
     assert_eq!(bundle.hosts.len(), 10);
     assert_eq!(bundle.wifi_aps.aps.len(), 8);
+    assert_eq!(bundle.remote_access.providers.len(), 2);
+    assert_eq!(bundle.remote_access.services.len(), 2);
+    assert_eq!(bundle.remote_access.wan_updates.len(), 1);
 }

@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     domain::SiteConfig,
+    remote_access::validate_remote_access,
     validate::{IssueSeverity, ValidationIssue},
 };
 
@@ -155,6 +156,8 @@ pub fn validate_site(site: &SiteConfig) -> Vec<ValidationIssue> {
             }
         }
     }
+
+    issues.extend(validate_remote_access(site));
 
     issues
 }

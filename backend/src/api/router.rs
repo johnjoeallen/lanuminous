@@ -11,7 +11,7 @@ use tower_http::services::{ServeDir, ServeFile};
 
 use crate::{
     app::{SiteService, StagedArtifactResult},
-    domain::SiteConfig,
+    domain::{PublicationAudience, PublicationPlan, PublicationProtocol, SiteConfig},
 };
 
 #[derive(Debug, Clone)]
@@ -34,8 +34,49 @@ pub struct SiteApiView {
     pub ssids: Vec<SsidCard>,
     pub access_points: Vec<AccessPointCard>,
     pub reverse_proxies: Vec<ReverseProxyCard>,
+    pub remote_access: RemoteAccessView,
     pub artifacts: Vec<ArtifactCard>,
     pub deployments: Vec<DeploymentCard>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoteAccessView {
+    pub providers: Vec<RemoteProviderCard>,
+    pub publications: Vec<RemotePublicationCard>,
+    pub wan_updates: Vec<RemoteWanUpdateCard>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoteProviderCard {
+    pub id: String,
+    pub kind: String,
+    pub credential_ref: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemotePublicationCard {
+    pub service: String,
+    pub enabled: bool,
+    pub provider: Option<String>,
+    pub external_name: Option<String>,
+    pub protocol: String,
+    pub target_port: u16,
+    pub audience: String,
+    pub exposure_mode: String,
+    pub target_address: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoteWanUpdateCard {
+    pub name: String,
+    pub enabled: bool,
+    pub provider: String,
+    pub hostname: String,
+    pub audience: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -150,7 +191,7 @@ pub struct StagedArtifactView {
 }
 
 impl SiteApiView {
-    pub fn from_site(site: &SiteConfig) -> Self {
+    pub fn from_site(site: &SiteConfig, remote_plan: &PublicationPlan) -> Self {
         let networks = site
             .networks
             .iter()
@@ -167,14 +208,12 @@ impl SiteApiView {
                     .map(|interface| interface.logical_name.clone())
                     .or_else(|| {
                         network.vlan.as_ref().and_then(|vlan| {
-                            vlan.parent_interface
-                                .as_ref()
-                                .and_then(|parent| {
-                                    site.interfaces
-                                        .iter()
-                                        .find(|interface| interface.name == *parent)
-                                        .map(|interface| interface.logical_name.clone())
-                                })
+                            vlan.parent_interface.as_ref().and_then(|parent| {
+                                site.interfaces
+                                    .iter()
+                                    .find(|interface| interface.name == *parent)
+                                    .map(|interface| interface.logical_name.clone())
+                            })
                         })
                     })
                     .unwrap_or_else(|| "unassigned".to_string());
@@ -295,6 +334,55 @@ impl SiteApiView {
             })
             .collect();
 
+        let remote_access = RemoteAccessView {
+            providers: site
+                .remote_access
+                .providers
+                .iter()
+                .map(|provider| RemoteProviderCard {
+                    id: provider.id.clone(),
+                    kind: provider_kind_name(provider),
+                    credential_ref: provider.credential_ref.clone(),
+                })
+                .collect(),
+            publications: site
+                .remote_access
+                .publications
+                .iter()
+                .map(|publication| {
+                    let service = publication.target.service_name().to_string();
+                    let planned = remote_plan
+                        .publications
+                        .iter()
+                        .find(|planned| planned.service == service);
+
+                    RemotePublicationCard {
+                        service,
+                        enabled: publication.enabled,
+                        provider: publication.provider.clone(),
+                        external_name: planned.map(|item| item.external_name.clone()),
+                        protocol: publication_protocol_name(&publication.protocol).to_string(),
+                        target_port: publication.target_port,
+                        audience: publication_audience_name(&publication.audience).to_string(),
+                        exposure_mode: format!("{:?}", publication.exposure_mode).to_lowercase(),
+                        target_address: planned.map(|item| item.target_address.clone()),
+                    }
+                })
+                .collect(),
+            wan_updates: site
+                .remote_access
+                .wan_updates
+                .iter()
+                .map(|update| RemoteWanUpdateCard {
+                    name: update.name.clone(),
+                    enabled: update.enabled,
+                    provider: update.provider.clone(),
+                    hostname: update.hostname.clone(),
+                    audience: publication_audience_name(&update.audience).to_string(),
+                })
+                .collect(),
+        };
+
         Self {
             name: site.metadata.name.clone(),
             description: site
@@ -311,6 +399,7 @@ impl SiteApiView {
             ssids,
             access_points,
             reverse_proxies,
+            remote_access,
             artifacts,
             deployments: vec![DeploymentCard {
                 id: "stage1-preview".to_string(),
@@ -344,7 +433,11 @@ async fn healthz() -> Json<Value> {
 }
 
 async fn site_summary(State(state): State<ApiState>) -> Json<SiteApiView> {
-    Json(SiteApiView::from_site(&state.site))
+    let service = SiteService;
+    let remote_plan = service
+        .plan_remote_access(&state.site)
+        .expect("remote access plan generation should succeed");
+    Json(SiteApiView::from_site(&state.site, &remote_plan))
 }
 
 async fn generate_staging(State(state): State<ApiState>) -> Json<StageGenerationView> {
@@ -381,4 +474,32 @@ fn spa_service(ui_dir: &Path) -> axum::routing::MethodRouter {
             .append_index_html_on_directories(true)
             .not_found_service(ServeFile::new(ui_dir.join("index.html"))),
     )
+}
+
+fn provider_kind_name(provider: &crate::domain::RemoteDnsProviderDef) -> String {
+    match provider.provider {
+        crate::domain::RemoteDnsProviderKind::ManagedSubdomain(_) => "managed_subdomain",
+        crate::domain::RemoteDnsProviderKind::JokerDynDns(_) => "joker_dyndns",
+        crate::domain::RemoteDnsProviderKind::GenericDynDns(_) => "generic_dyndns",
+        crate::domain::RemoteDnsProviderKind::Manual(_) => "manual",
+    }
+    .to_string()
+}
+
+fn publication_protocol_name(protocol: &PublicationProtocol) -> &'static str {
+    match protocol {
+        PublicationProtocol::Http => "http",
+        PublicationProtocol::Https => "https",
+        PublicationProtocol::Tcp => "tcp",
+        PublicationProtocol::Udp => "udp",
+    }
+}
+
+fn publication_audience_name(audience: &PublicationAudience) -> &'static str {
+    match audience {
+        PublicationAudience::Private => "private",
+        PublicationAudience::Family => "family",
+        PublicationAudience::AdminOnly => "admin_only",
+        PublicationAudience::Public => "public",
+    }
 }

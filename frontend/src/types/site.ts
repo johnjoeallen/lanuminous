@@ -19,6 +19,7 @@ export interface SiteViewModel {
   ssids: SsidCard[];
   accessPoints: AccessPointCard[];
   reverseProxies: ReverseProxyCard[];
+  remoteAccess: RemoteAccessView;
   artifacts: ArtifactCard[];
   deployments: DeploymentCard[];
 }
@@ -96,6 +97,38 @@ export interface ReverseProxyCard {
   backendPort: number;
   backendScheme: string;
   tlsMode: string;
+}
+
+export interface RemoteAccessView {
+  providers: RemoteProviderCard[];
+  publications: RemotePublicationCard[];
+  wanUpdates: RemoteWanUpdateCard[];
+}
+
+export interface RemoteProviderCard {
+  id: string;
+  kind: string;
+  credentialRef: string | null;
+}
+
+export interface RemotePublicationCard {
+  service: string;
+  enabled: boolean;
+  provider: string | null;
+  externalName: string | null;
+  protocol: string;
+  targetPort: number;
+  audience: string;
+  exposureMode: string;
+  targetAddress: string | null;
+}
+
+export interface RemoteWanUpdateCard {
+  name: string;
+  enabled: boolean;
+  provider: string;
+  hostname: string;
+  audience: string;
 }
 
 export interface ArtifactCard {

@@ -1,0 +1,36 @@
+providers:
+  - id: lanuminous
+    type: managed_subdomain
+    zone: rivia-demo.lanuminous.net
+
+  - id: joker
+    type: joker_dyn_dns
+    service: joker
+    hostname: vpn.rivia.example.net
+    credential_ref: joker-ddns
+
+services:
+  - service: jellyfin
+    enabled: true
+    provider: lanuminous
+    publish_as: jellyfin
+    protocol: https
+    port: 8096
+    audience: family
+    exposure_mode: direct
+
+  - service: gateway
+    enabled: false
+    provider: joker
+    publish_as: vpn
+    protocol: udp
+    port: 51820
+    audience: admin_only
+    exposure_mode: direct
+
+wan_updates:
+  - name: gateway-vpn-ddns
+    enabled: true
+    provider: joker
+    hostname: vpn.rivia.example.net
+    audience: admin_only

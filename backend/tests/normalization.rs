@@ -17,6 +17,9 @@ fn normalizes_bundle_into_canonical_model() {
     assert_eq!(site.wifi.ssids.len(), 4);
     assert_eq!(site.port_forwards.rules.len(), 1);
     assert_eq!(site.reverse_proxies.sites.len(), 1);
+    assert_eq!(site.remote_access.providers.len(), 2);
+    assert_eq!(site.remote_access.publications.len(), 2);
+    assert_eq!(site.remote_access.wan_updates.len(), 1);
     assert!(site
         .services
         .iter()

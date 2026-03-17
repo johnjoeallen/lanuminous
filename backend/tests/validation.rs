@@ -51,3 +51,20 @@ fn validation_detects_unknown_proxy_backend_host() {
         .any(|issue| issue.severity == IssueSeverity::Error
             && issue.message.contains("missing-host")));
 }
+
+#[test]
+fn validation_detects_unknown_remote_access_provider() {
+    let service = SiteService;
+    let mut site = service
+        .load_site(example_site())
+        .expect("example config should load");
+    site.remote_access.publications[0].provider = Some("missing-provider".to_string());
+
+    let report = service.validate_site(&site);
+
+    assert!(report
+        .issues
+        .iter()
+        .any(|issue| issue.severity == IssueSeverity::Error
+            && issue.message.contains("missing-provider")));
+}

@@ -1,7 +1,8 @@
 use serde::Deserialize;
 
 use crate::domain::{
-    ApBackend, ApController, HostRole, InterfaceKind, InterfaceRole, PolicyAction,
+    ApBackend, ApController, ExposureMode, HostRole, InterfaceKind, InterfaceRole, PolicyAction,
+    PublicationAudience, PublicationProtocol,
 };
 
 #[derive(Debug, Clone, Deserialize)]
@@ -254,4 +255,58 @@ pub struct RawProxyBackend {
     pub host_ref: String,
     pub port: u16,
     pub scheme: crate::domain::ProxyScheme,
+}
+
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct RawRemoteAccessFile {
+    #[serde(default)]
+    pub providers: Vec<RawRemoteDnsProvider>,
+    #[serde(default)]
+    pub services: Vec<RawPublicationRule>,
+    #[serde(default)]
+    pub wan_updates: Vec<RawWanAddressUpdate>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawRemoteDnsProvider {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub provider_type: RawRemoteProviderType,
+    pub zone: Option<String>,
+    pub hostname: Option<String>,
+    pub service: Option<String>,
+    pub update_url: Option<String>,
+    pub base_domain: Option<String>,
+    pub note: Option<String>,
+    pub credential_ref: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RawRemoteProviderType {
+    ManagedSubdomain,
+    JokerDynDns,
+    GenericDynDns,
+    Manual,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawPublicationRule {
+    pub service: String,
+    pub enabled: bool,
+    pub provider: Option<String>,
+    pub publish_as: Option<String>,
+    pub protocol: Option<PublicationProtocol>,
+    pub port: Option<u16>,
+    pub audience: Option<PublicationAudience>,
+    pub exposure_mode: Option<ExposureMode>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RawWanAddressUpdate {
+    pub name: String,
+    pub enabled: bool,
+    pub provider: Option<String>,
+    pub hostname: Option<String>,
+    pub audience: Option<PublicationAudience>,
 }
